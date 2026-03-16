@@ -5,7 +5,7 @@ Tags: multilingual, translate, translation, language, localization
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 3.7.8
+Stable tag: 3.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -105,7 +105,7 @@ Wherever third party code has been used, credit has been given in the code’s c
 
 == Changelog ==
 
-= 3.8 =
+= 3.8 (2026-03-17) =
 
 * Requires PHP 7.4 and WP 6.5 as minimum version
 * Pro: Use autonomous updater #2475
@@ -126,6 +126,7 @@ Wherever third party code has been used, credit has been given in the code’s c
 * Pro: Fix inactive languages not displayed when they should in REST API #2791
 * Pro: Fix translation of ACF repeaters with pagination #2674
 * Pro: Fix ACF's layout fields instructions #2889
+* Pro: Fix ACF's taxonomy fields not synchronized #2948
 * Pro: Fix event dates of The Events Calendar not duplicated #2894
 * Add language switcher block and navigation language switcher block #1811
 * Add support for multiple encodings in wpml-config.xml #1679, #2655
@@ -139,6 +140,7 @@ Wherever third party code has been used, credit has been given in the code’s c
 * Fix warning when requesting a non-existing language #1665
 * Fix strings translations import with WP Importer #1637
 * Fix edge cases leading to wrong languages order #1777
+* Fix a fatal error with the plugin Groups #1834
 
 = 3.7.8 (2026-02-23) =
 
