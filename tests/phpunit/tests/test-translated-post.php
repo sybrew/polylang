@@ -366,16 +366,16 @@ class Translated_Post_Test extends PLL_Translated_Object_UnitTestCase {
 		$this->assertSame( 0, self::$model->post->get_translation( $posts['fr'], 'en' ) );
 	}
 
-	public function test_get_object_term_for_translation_should_not_fail_when_cache_corrupted() {
-		$posts = self::factory()->post->create_translated(
+	public function test_get_object_term_for_translation_should_fail_gracefully_when_cache_corrupted() {
+		$post_id = self::factory()->post->create(
 			array(
 				'lang' => 'en',
 			),
 		);
 
-		wp_cache_set( $posts['en'], 'invalid', 'post_translations_relationships' );
+		wp_cache_set( $post_id, 'invalid', 'post_translations_relationships' );
 
-		$term = self::factory()->pll_model->post->get_object_term( $posts['en'], 'post_translations' );
+		$term = self::factory()->pll_model->post->get_object_term( $post_id, 'post_translations' );
 
 		$this->assertNull( $term );
 	}
@@ -391,6 +391,16 @@ class Translated_Post_Test extends PLL_Translated_Object_UnitTestCase {
 
 		$term = self::factory()->pll_model->post->get_object_term( $post_id, 'language' );
 
-		$this->assertNull( $term );
+		$this->assertSame( 'en', $term->slug );
+	}
+
+	public function test_get_object_term_should_prime_cache_when_no_language_assigned() {
+		$post_id = self::factory()->post->create();
+
+		$this->assertFalse( self::factory()->pll_model->post->get_language( $post_id ) );
+
+		$cache = wp_cache_get( $post_id, 'language_relationships' );
+
+		$this->assertSame( array(), $cache, "The cache should be primed with empty array when no language is assigned for {$post_id}." );
 	}
 }
