@@ -227,11 +227,11 @@ class PLL_Switcher {
 		$this->links = $links;
 
 		if ( empty( $args['dropdown'] ) && ! empty( PLL()->switcher ) ) {
-			$settings = $this->build_settings( $args, $this->links );
+			$settings = self::build_settings( $args, $this->links );
 
 			if ( ! empty( $args['raw'] ) ) {
 				$elements = PLL()->switcher->get_elements( $settings, $this->links );
-				return $this->build_elements( $elements, $settings, $this->links );
+				return self::build_elements( $elements, $settings, $this->links );
 			}
 
 			if ( isset( $args['echo'] ) && empty( $args['echo'] ) ) {
@@ -329,7 +329,7 @@ class PLL_Switcher {
 	 * @param PLL_Links $links Instance of `PLL_Links`.
 	 * @return Settings
 	 */
-	public function build_settings( array $args, PLL_Links $links ): Settings {
+	public static function build_settings( array $args, PLL_Links $links ): Settings {
 		$args     = wp_parse_args( $args, self::DEFAULTS );
 		$settings = array(
 			'layout'       => 'vertical',
@@ -401,7 +401,7 @@ class PLL_Switcher {
 	 * @param PLL_Links                                      $links    Instance of `PLL_Links`.
 	 * @return array[]
 	 */
-	public function build_elements( array $elements, Settings $settings, PLL_Links $links ): array {
+	private static function build_elements( array $elements, Settings $settings, PLL_Links $links ): array {
 		$filter          = $settings->hide_if_empty ? 'hide_empty' : '';
 		$languages       = $links->model->languages->filter( $filter )->get_list();
 		$keyed_languages = array_combine( array_column( $languages, 'slug' ), $languages );
