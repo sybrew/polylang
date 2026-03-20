@@ -225,16 +225,6 @@ class PLL_Switcher {
 	 */
 	public function the_languages( $links, $args = array() ) {
 		$this->links = $links;
-		$args = wp_parse_args( $args, self::DEFAULTS );
-
-		/**
-		 * Filter the arguments of the 'pll_the_languages' template tag
-		 *
-		 * @since 1.5
-		 *
-		 * @param array $args
-		 */
-		$args = apply_filters( 'pll_the_languages_args', $args );
 
 		if ( empty( $args['dropdown'] ) && ! empty( PLL()->switcher ) ) {
 			$settings = $this->build_settings( $args, $this->links );
@@ -251,6 +241,11 @@ class PLL_Switcher {
 			PLL()->switcher->print( $settings, $this->links );
 			return '';
 		}
+
+		$args = wp_parse_args( $args, self::DEFAULTS );
+
+		/** This filter is documented in src/switcher.php */
+		$args = apply_filters( 'pll_the_languages_args', $args );
 
 		// Force not to hide the language for the widget preview even if the option is checked.
 		if ( $this->links instanceof PLL_Admin_Links ) {
@@ -335,11 +330,21 @@ class PLL_Switcher {
 	 * @return Settings
 	 */
 	public function build_settings( array $args, PLL_Links $links ): Settings {
+		$args     = wp_parse_args( $args, self::DEFAULTS );
 		$settings = array(
 			'layout'       => 'vertical',
 			'alignment'    => 'left',
 			'show_wrapper' => false,
 		);
+
+		/**
+		 * Filter the arguments of the 'pll_the_languages' template tag.
+		 *
+		 * @since 1.5
+		 *
+		 * @param array $args
+		 */
+		$args = apply_filters( 'pll_the_languages_args', $args );
 
 		if ( empty( $args['hide_if_empty'] ) ) {
 			$settings['hide_if_empty'] = false;
@@ -349,7 +354,7 @@ class PLL_Switcher {
 			$settings['show_flags'] = true;
 		}
 
-		if ( empty( $args['show_names'] ) ) {
+		if ( isset( $args['show_names'] ) && empty( $args['show_names'] ) ) {
 			$settings['show_labels'] = '';
 		} elseif ( 'slug' === $args['display_names_as'] ) {
 			$settings['show_labels'] = 'codes';
