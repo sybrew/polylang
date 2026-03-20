@@ -150,6 +150,15 @@ class Settings {
 	 * } $settings
 	 */
 	public function __construct( array $settings, PLL_Links $links ) {
+		/**
+		 * Filter the language switcher settings.
+		 *
+		 * @since 3.9
+		 *
+		 * @param array $settings Settings.
+		 */
+		$settings = apply_filters( 'pll_language_switcher_settings', $settings );
+
 		foreach ( array_intersect_key( $settings, get_class_vars( self::class ) ) as $name => $value ) {
 			$this->$name = $value;
 		}
