@@ -379,10 +379,10 @@ class PLL_Switcher {
 		}
 
 		if ( ! empty( $args['classes'] ) ) {
-			$settings['link_classes'] = array_filter( $args['link_classes'] );
+			$settings['item_classes'] = array_filter( $args['classes'] );
 		}
 
-		if ( ! empty( $args['item_classes'] ) ) {
+		if ( ! empty( $args['link_classes'] ) ) {
 			$settings['link_classes'] = array_filter( $args['link_classes'] );
 		}
 
