@@ -3,7 +3,6 @@
  * @package Polylang
  */
 
-use WP_Syntex\Polylang\Language_Switcher\Settings;
 use WP_Syntex\Polylang\Language_Switcher\Switcher;
 
 /**
@@ -227,7 +226,7 @@ class PLL_Switcher {
 		$this->links = $links;
 
 		if ( empty( $args['dropdown'] ) && ! empty( PLL()->switcher ) ) {
-			$settings = self::build_settings( $args, $this->links );
+			$settings = self::build_settings( $args );
 
 			if ( ! empty( $args['raw'] ) ) {
 				$elements = PLL()->switcher->get_elements( $settings, $this->links );
@@ -311,7 +310,7 @@ class PLL_Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param array     $args  {
+	 * @param array $args {
 	 *     Optional array of arguments.
 	 *
 	 *     @type int      $hide_if_empty          Hides languages with no posts ( or pages ) if set to 1, defaults to 1.
@@ -326,10 +325,9 @@ class PLL_Switcher {
 	 *     @type string[] $classes                A list of CSS classes to set to each elements outputted.
 	 *     @type string[] $link_classes           A list of CSS classes to set to each link outputted.
 	 * }
-	 * @param PLL_Links $links Instance of `PLL_Links`.
-	 * @return Settings
+	 * @return array
 	 */
-	public static function build_settings( array $args, PLL_Links $links ): Settings {
+	public static function build_settings( array $args ): array {
 		$args     = wp_parse_args( $args, self::DEFAULTS );
 		$settings = array(
 			'layout'       => 'vertical',
@@ -388,7 +386,7 @@ class PLL_Switcher {
 			$settings['link_classes'] = array_filter( $args['link_classes'] );
 		}
 
-		return new Settings( $settings, $links );
+		return $settings;
 	}
 
 	/**
@@ -397,15 +395,15 @@ class PLL_Switcher {
 	 * @since 3.9
 	 *
 	 * @param WP_Syntex\Polylang\Language_Switcher\Element[] $elements List of instances of `Element`.
-	 * @param Settings                                       $settings Instance of `Settings`.
+	 * @param array                                          $settings Settings.
 	 * @param PLL_Links                                      $links    Instance of `PLL_Links`.
 	 * @return array[]
 	 */
-	private static function build_elements( array $elements, Settings $settings, PLL_Links $links ): array {
-		$filter          = $settings->hide_if_empty ? 'hide_empty' : '';
+	private static function build_elements( array $elements, array $settings, PLL_Links $links ): array {
+		$filter          = ! empty( $settings['hide_if_empty'] ) ? 'hide_empty' : '';
 		$languages       = $links->model->languages->filter( $filter )->get_list();
 		$keyed_languages = array_combine( array_column( $languages, 'slug' ), $languages );
-		$data = array();
+		$data            = array();
 
 		foreach ( $elements as $slug => $element ) {
 			$language      = $keyed_languages[ $element->slug ];
@@ -415,9 +413,9 @@ class PLL_Switcher {
 				'slug'           => $element->slug,
 				'locale'         => $element->locale,
 				'is_rtl'         => $language->is_rtl,
-				'name'           => 'codes' === $settings->show_labels ? $element->slug : $language->name,
+				'name'           => isset( $settings['show_labels'] ) && 'codes' === $settings['show_labels'] ? $element->slug : $language->name,
 				'url'            => $element->url,
-				'flag'           => $settings->show_flags ? $element->flag : $language->get_display_flag_url(),
+				'flag'           => ! empty( $settings['show_flags'] ) ? $element->flag : $language->get_display_flag_url(),
 				'current_lang'   => $element->is_current,
 				'no_translation' => in_array( 'no-translation', $element->item_classes, true ),
 				'classes'        => $element->item_classes,

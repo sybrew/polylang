@@ -14,6 +14,24 @@ defined( 'ABSPATH' ) || exit;
  * Class that holds the language switcher's settings.
  *
  * @since 3.9
+ *
+ * @phpstan-type OptionalSettings array{
+ *     layout?: 'horizontal'|'vertical'|'dropdown',
+ *     alignment?: 'left'|'center'|'right'|'stretched',
+ *     show_wrapper?: bool,
+ *     show_flags?: bool,
+ *     show_labels?: ''|'names'|'codes',
+ *     hide_if_empty?: bool,
+ *     hide_if_no_translation?: bool,
+ *     hide_current?: bool,
+ *     force_home?: bool,
+ *     post_id?: int,
+ *     wrapper_classes?: non-empty-string[],
+ *     item_classes?: non-empty-string[],
+ *     link_classes?: non-empty-string[],
+ *     context?: 'frontend'|'admin',
+ *     current_language_code?: string
+ * }
  */
 class Settings {
 	/**
@@ -131,23 +149,7 @@ class Settings {
 	 * }
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 *
-	 * @phpstan-param array{
-	 *     layout?: 'horizontal'|'vertical'|'dropdown',
-	 *     alignment?: 'left'|'center'|'right'|'stretched',
-	 *     show_wrapper?: bool,
-	 *     show_flags?: bool,
-	 *     show_labels?: ''|'names'|'codes',
-	 *     hide_if_empty?: bool,
-	 *     hide_if_no_translation?: bool,
-	 *     hide_current?: bool,
-	 *     force_home?: bool,
-	 *     post_id?: int,
-	 *     wrapper_classes?: non-empty-string[],
-	 *     item_classes?: non-empty-string[],
-	 *     link_classes?: non-empty-string[],
-	 *     context?: 'frontend'|'admin',
-	 *     current_language_code?: string
-	 * } $settings
+	 * @phpstan-param OptionalSettings $settings
 	 */
 	public function __construct( array $settings, PLL_Links $links ) {
 		/**

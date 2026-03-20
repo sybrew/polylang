@@ -13,6 +13,8 @@ defined( 'ABSPATH' ) || exit;
  * Class that can display a language switcher.
  *
  * @since 3.9
+ *
+ * @phpstan-import-type OptionalSettings from Settings
  */
 class Switcher {
 	/**
@@ -45,11 +47,11 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings  $settings Instance of `Settings`.
+	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return void
 	 */
-	public function print( Settings $settings, PLL_Links $links ): void {
+	public function print( array $settings, PLL_Links $links ): void {
 		echo $this->get( $settings, $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
@@ -58,21 +60,21 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings  $settings Instance of `Settings`.
+	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return string
 	 */
-	public function get( Settings $settings, PLL_Links $links ): string {
-		$languages = $this->get_languages( $settings, $links );
+	public function get( array $settings, PLL_Links $links ): string {
+		$settings = new Settings( $settings, $links );
+		$switcher = $this->get_switcher( $settings, $links );
 
-		switch ( $settings->layout ) {
-			case 'horizontal':
-			case 'vertical':
-				return ( new Nav\Switcher( $settings, $links ) )->get( $languages );
-
-			default:
-				return '';
+		if ( empty( $switcher ) ) {
+			return '';
 		}
+
+		return $switcher->get(
+			$this->get_languages( $settings, $links )
+		);
 	}
 
 	/**
@@ -80,20 +82,40 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings  $settings Instance of `Settings`.
+	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return Element[]
 	 */
-	public function get_elements( Settings $settings, PLL_Links $links ): array {
-		$languages = $this->get_languages( $settings, $links );
+	public function get_elements( array $settings, PLL_Links $links ): array {
+		$settings = new Settings( $settings, $links );
+		$switcher = $this->get_switcher( $settings, $links );
 
+		if ( empty( $switcher ) ) {
+			return array();
+		}
+
+		return $switcher->get_elements(
+			$this->get_languages( $settings, $links )
+		)->get();
+	}
+
+	/**
+	 * Returns an instance of the switcher.
+	 *
+	 * @since 3.9
+	 *
+	 * @param Settings  $settings Instance of `Settings`.
+	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @return Base\Abstract_Switcher|null
+	 */
+	private function get_switcher( Settings $settings, PLL_Links $links ): ?Base\Abstract_Switcher {
 		switch ( $settings->layout ) {
 			case 'horizontal':
 			case 'vertical':
-				return ( new Nav\Switcher( $settings, $links ) )->get_elements( $languages )->get();
+				return new Nav\Switcher( $settings, $links );
 
 			default:
-				return array();
+				return null;
 		}
 	}
 
