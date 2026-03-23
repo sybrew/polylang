@@ -35,17 +35,18 @@ class Switcher extends Abstract_Switcher {
 			return $out;
 		}
 
-		$wrapper_classes = array_merge(
+		$outer_wrapper_classes = array_merge(
 			$this->settings->wrapper_classes,
-			array( 'pll-switcher', "pll-layout-{$this->settings->layout}" )
+			array( 'pll-switcher', 'pll-aspect-ratio-32', 'pll-alignment-' . ( is_rtl() ? 'right' : 'left' ) )
 		);
 
 		$tag = $this->supports_html5() ? 'nav' : 'div';
 		$out = sprintf(
-			'<%1$s class="%2$s" aria-label="%3$s"><ul>%4$s</ul></%1$s>',
+			'<%1$s class="%2$s" aria-label="%3$s"><ul class="%4$s">%5$s</ul></%1$s>',
 			$tag,
-			esc_attr( implode( ' ', $wrapper_classes ) ),
+			esc_attr( implode( ' ', $outer_wrapper_classes ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
+			esc_attr( "pll-layout-{$this->settings->layout}" ),
 			$out
 		);
 

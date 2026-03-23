@@ -46,6 +46,10 @@
 	display: inline-block;
 	vertical-align: middle;
 }
+.pll-switcher a span + span {
+	margin-inline-start: .3em;
+	writing-mode: horizontal-tb;
+}
 
 /* Flags */
 .pll-switcher a img {
@@ -53,12 +57,20 @@
 	object-fit: cover;
 	object-position: center;
 }
+.pll-switcher.pll-aspect-ratio-11 a img {
+	width: 18px;
+	height: 18px;
+}
+.pll-switcher.pll-aspect-ratio-32 a img {
+	width: 18px;
+	height: 12px;
+}
 
 /* Custom styles */
 .pll-layout-horizontal li:not(:last-child) {
-	margin-inline-end: .3em;
+	margin-inline-end: 20px;
 	writing-mode: horizontal-tb;
 }
 .pll-layout-vertical li:not(:last-child) {
-	margin-bottom: .3em;
+	margin-bottom: 20px;
 }
