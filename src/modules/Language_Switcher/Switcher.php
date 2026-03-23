@@ -6,6 +6,7 @@
 namespace WP_Syntex\Polylang\Language_Switcher;
 
 use PLL_Links;
+use PLL_Model;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,6 +19,22 @@ defined( 'ABSPATH' ) || exit;
  */
 class Switcher {
 	/**
+	 * @var PLL_Model
+	 */
+	private $model;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 3.9
+	 *
+	 * @param PLL_Model $model Polylang's model.
+	 */
+	public function __construct( PLL_Model $model ) {
+		$this->model = $model;
+	}
+
+	/**
 	 * Adds hooks.
 	 *
 	 * @since 3.9
@@ -25,7 +42,10 @@ class Switcher {
 	 * @return self
 	 */
 	public function init(): self {
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+		if ( $this->model->has_languages() ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_admin_styles' ) );
+		}
 		return $this;
 	}
 
@@ -40,6 +60,36 @@ class Switcher {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_style( 'pll-language-switcher', plugins_url( "/css/build/switcher{$suffix}.css", POLYLANG_FILE ), array(), POLYLANG_FILE );
+	}
+
+	/**
+	 * Maybe enqueues CSS styles in admin.
+	 *
+	 * @since 3.9
+	 *
+	 * @return void
+	 */
+	public function maybe_enqueue_admin_styles(): void {
+		$screen = get_current_screen();
+
+		if ( empty( $screen ) ) {
+			return;
+		}
+
+		if ( 'post' === $screen->base && ! empty( $screen->post_type ) && $this->model->is_translated_post_type( $screen->post_type ) ) {
+			$this->enqueue_styles();
+			return;
+		}
+
+		if ( 'term' === $screen->base && ! empty( $screen->taxonomy ) && $this->model->is_translated_taxonomy( $screen->taxonomy ) ) {
+			$this->enqueue_styles();
+			return;
+		}
+
+		if ( 'site-editor' === $screen->base ) {
+			$this->enqueue_styles();
+			return;
+		}
 	}
 
 	/**

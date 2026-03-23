@@ -11,7 +11,7 @@ add_action(
 	'pll_init',
 	function ( $polylang ) {
 		if ( $polylang->model->has_languages() ) {
-			$polylang->switcher = ( new Switcher() )->init();
+			$polylang->switcher = ( new Switcher( $polylang->model ) )->init();
 		}
 	}
 );
