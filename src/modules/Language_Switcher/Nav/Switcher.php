@@ -31,7 +31,7 @@ class Switcher extends Abstract_Switcher {
 			$out .= $this->get_item( $element );
 		}
 
-		if ( ! $this->settings->show_wrapper ) {
+		if ( ! $this->settings->show_wrapper || trim( $out ) === '' ) {
 			return $out;
 		}
 
