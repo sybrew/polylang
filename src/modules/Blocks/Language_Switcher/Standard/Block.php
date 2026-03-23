@@ -61,15 +61,13 @@ class Block extends Abstract_Block {
 		$outer_wrapper_classes = 'pll-switcher pll-aspect-ratio-32 pll-alignment-' . ( is_rtl() ? 'right' : 'left' );
 
 		if ( $attributes['dropdown'] ) {
-			$outer_wrapper_tag        = sprintf( '<div class="%s">%s</div>', $outer_wrapper_classes, '<div %1$s>%2$s</div>' );
-			$inner_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'pll-layout-dropdown' ) );
-			$switcher_output          = sprintf( '<label class="screen-reader-text" for="lang_choice_%s">%s</label>', (int) $attributes['dropdown'], esc_html( $aria_label ) ) . $switcher_output;
+			$outer_wrapper_tag = sprintf( '<div class="%s pll-layout-dropdown">%s</div>', $outer_wrapper_classes, '<div %1$s>%2$s</div>' );
+			$switcher_output   = sprintf( '<label class="screen-reader-text" for="lang_choice_%s">%s</label>', (int) $attributes['dropdown'], esc_html( $aria_label ) ) . $switcher_output;
 		} else {
-			$outer_wrapper_tag        = sprintf( '<nav role="navigation" class="%s" aria-label="%s">%s</nav>', $outer_wrapper_classes, esc_attr( $aria_label ), '<ul %1$s>%2$s</ul>' );
-			$inner_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'pll-layout-vertical' ) );
+			$outer_wrapper_tag = sprintf( '<nav role="navigation" class="%s pll-layout-vertical" aria-label="%s">%s</nav>', $outer_wrapper_classes, esc_attr( $aria_label ), '<ul %1$s>%2$s</ul>' );
 		}
 
-		return sprintf( $outer_wrapper_tag, $inner_wrapper_attributes, $switcher_output );
+		return sprintf( $outer_wrapper_tag, get_block_wrapper_attributes(), $switcher_output );
 	}
 
 	/**

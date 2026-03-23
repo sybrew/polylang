@@ -20,6 +20,7 @@ defined( 'ABSPATH' ) || exit;
  *     alignment?: 'left'|'center'|'right'|'stretched',
  *     show_wrapper?: bool,
  *     show_flags?: bool,
+ *     flag_aspect_ratio?: '32'|'11',
  *     show_labels?: ''|'names'|'codes',
  *     hide_if_empty?: bool,
  *     hide_if_no_translation?: bool,
@@ -57,6 +58,13 @@ class Settings {
 	 * @var bool
 	 */
 	public bool $show_flags = false;
+
+	/**
+	 * @var string
+	 *
+	 * @phpstan-var '32'|'11'
+	 */
+	public string $flag_aspect_ratio = '32';
 
 	/**
 	 * @var string
@@ -135,6 +143,7 @@ class Settings {
 	 *     @type string   $alignment              Alignment of the items. Possible values are `left`, `center`, `right`, `stretched`. Default is `center`.
 	 *     @type bool     $show_wrapper           Display the wrapper or not. Default is `true`.
 	 *     @type bool     $show_flags             Display the flags or not. Default is `false`.
+	 *     @type string   $flag_aspect_ratio      Flags aspect ratio. Possible values are `32` and `11`. Default is `32`.
 	 *     @type string   $show_labels            Display the labels. Possible values are an empty string (no labels), `names` (language names), `codes` (languages codes). Default is `names`.
 	 *     @type bool     $hide_if_empty          Hide languages that don't have any posts. Default is `true`.
 	 *     @type bool     $hide_if_no_translation Hide languages that don't have a translation. Default is `false`.
