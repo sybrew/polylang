@@ -57,18 +57,19 @@ class Block extends Abstract_Block {
 			return '';
 		}
 
-		$aria_label = __( 'Choose a language', 'polylang' );
-		if ( $attributes['dropdown'] ) {
-			$switcher_output = '<label class="screen-reader-text" for="' . esc_attr( 'lang_choice_' . $attributes['dropdown'] ) . '">' . esc_html( $aria_label ) . '</label>' . $switcher_output;
+		$aria_label            = __( 'Choose a language', 'polylang' );
+		$outer_wrapper_classes = 'pll-switcher pll-aspect-ratio-32 pll-alignment-' . ( is_rtl() ? 'right' : 'left' );
 
-			$wrap_tag = '<div %1$s>%2$s</div>';
+		if ( $attributes['dropdown'] ) {
+			$outer_wrapper_tag        = sprintf( '<div class="%s">%s</div>', $outer_wrapper_classes, '<div %1$s>%2$s</div>' );
+			$inner_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'pll-layout-dropdown' ) );
+			$switcher_output          = sprintf( '<label class="screen-reader-text" for="lang_choice_%s">%s</label>', (int) $attributes['dropdown'], esc_html( $aria_label ) ) . $switcher_output;
 		} else {
-			$wrap_tag = '<nav role="navigation" aria-label="' . esc_attr( $aria_label ) . '"><ul %1$s>%2$s</ul></nav>';
+			$outer_wrapper_tag        = sprintf( '<nav role="navigation" class="%s" aria-label="%s">%s</nav>', $outer_wrapper_classes, esc_attr( $aria_label ), '<ul %1$s>%2$s</ul>' );
+			$inner_wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'pll-layout-vertical' ) );
 		}
 
-		$wrap_attributes = get_block_wrapper_attributes();
-
-		return sprintf( $wrap_tag, $wrap_attributes, $switcher_output );
+		return sprintf( $outer_wrapper_tag, $inner_wrapper_attributes, $switcher_output );
 	}
 
 	/**
