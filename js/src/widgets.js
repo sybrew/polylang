@@ -147,5 +147,43 @@ jQuery(
 			}
 		);
 
+		// ADVANCED WIDGET.
+		$( '.widgets-sortables, .control-section-sidebar, .edit-widgets-main-block-list' ).on(
+			'change',
+			'.advanced_polylang-widget-content select, .advanced_polylang-widget-content input',
+			function () {
+				const $this    = $( this );
+				const key      = $this.attr( 'data-key' );
+				let   value    = '';
+				const $wrapper = $this.parents( '.advanced_polylang-widget-content' );
+
+				if ( 'SELECT' === this.nodeName ) {
+					value = $this.children( ':selected' ).val();
+				} else {
+					value = true === $this.prop( 'checked' ) ? '1' : '0';
+				}
+
+				// Hide rows.
+				const $inputs = $wrapper.children( `[class*="pll-hidden-if-${ key }-"]` );
+
+				$inputs.not( `.pll-hidden-if-${ key }-${ value }` ).removeClass( `pll-hidden-by-${ key }` ); // phpcs:ignore Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword, Generic.ControlStructures.InlineControlStructure.NotAllowed
+				$inputs.filter( `.pll-hidden-if-${ key }-${ value }` ).addClass( `pll-hidden-by-${ key }` ); // phpcs:ignore Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword, Generic.ControlStructures.InlineControlStructure.NotAllowed
+
+				// Forbid disabling both flag and name/code.
+				if ( 'show_labels' === key && '' === value ) {
+					const $other_input = $wrapper.find( '[data-key="show_flags"]' ).first();
+
+					if ( true !== $other_input.prop( 'checked' ) ) {
+						$other_input.prop( 'checked', true ).trigger( 'change' );
+					}
+				} else if ( 'show_flags' === key && '0' === value ) {
+					const $other_input = $wrapper.find( '[data-key="show_labels"]' ).first();
+
+					if ( '' === $other_input.children( ':selected' ).val() ) {
+						$other_input.children( '[value="names"]' ).prop( 'selected', true ).trigger( 'change' );
+					}
+				}
+			}
+		);
 	}
 );

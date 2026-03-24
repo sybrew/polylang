@@ -372,6 +372,14 @@ td.column-default_lang .icon-default-lang:before,
 	margin-right: 10px;
 }
 
+/* Widgets */
+.advanced_polylang-widget-content [class*="pll-hidden-by-"] {
+	display: none;
+}
+.advanced_polylang-widget-content select {
+	margin-bottom: .5em;
+}
+
 @media screen and ( max-width: 782px ) {
 	/* settings */
 	#wpbody-content .pll-settings .pll-configure > td {
