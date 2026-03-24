@@ -39,11 +39,14 @@ class Switcher extends Abstract_Switcher {
 			$this->settings->wrapper_classes,
 			array(
 				'pll-switcher',
-				"pll-aspect-ratio-{$this->settings->flag_aspect_ratio}",
 				"pll-layout-{$this->settings->layout}",
 				"pll-alignment-{$this->settings->alignment}",
 			)
 		);
+
+		if ( $this->settings->show_flags ) {
+			$outer_wrapper_classes[] = "pll-aspect-ratio-{$this->settings->flag_aspect_ratio}";
+		}
 
 		$tag = $this->supports_html5() ? 'nav' : 'div';
 		$out = sprintf(
