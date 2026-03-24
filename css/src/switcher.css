@@ -1,3 +1,10 @@
+/* Dropdown layout */
+.pll-layout-dropdown select {
+	background: none;
+	border-radius: 0;
+	border: solid 1px #515962;
+}
+
 /* List layout */
 .pll-switcher ul {
 	padding: 0;
@@ -6,28 +13,34 @@
 	line-height: normal;
 }
 
-/* Horizontal layout */
-.pll-layout-horizontal ul {
+/* Horizontal and Dropdown layouts */
+.pll-layout-horizontal ul,
+.pll-layout-dropdown {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
 }
-.pll-alignment-left.pll-layout-horizontal ul {
+.pll-alignment-left.pll-layout-horizontal ul,
+.pll-alignment-left.pll-layout-dropdown {
 	align-items: flex-start;
 	justify-content: flex-start;
 }
-.pll-alignment-center.pll-layout-horizontal ul {
+.pll-alignment-center.pll-layout-horizontal ul,
+.pll-alignment-center.pll-layout-dropdown {
 	align-items: center;
 	justify-content: center;
 }
-.pll-alignment-right.pll-layout-horizontal ul {
+.pll-alignment-right.pll-layout-horizontal ul,
+.pll-alignment-right.pll-layout-dropdown {
 	align-items: flex-end;
 	justify-content: flex-end;
 }
-.pll-alignment-stretched.pll-layout-horizontal ul {
+.pll-alignment-stretched.pll-layout-horizontal ul,
+.pll-alignment-stretched.pll-layout-dropdown {
 	align-items: stretch;
 }
-.pll-alignment-stretched.pll-layout-horizontal li {
+.pll-alignment-stretched.pll-layout-horizontal li,
+.pll-alignment-stretched.pll-layout-dropdown select {
 	flex-grow: 1;
 }
 
