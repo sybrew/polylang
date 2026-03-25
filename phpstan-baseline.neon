@@ -1528,5 +1528,5 @@ parameters:
 			message: '#^Parameter \#1 \$text of function esc_attr expects string, bool\|string given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/widget-languages.php
+			path: src/modules/Widgets/widget-languages.php
 

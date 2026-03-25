@@ -3,9 +3,10 @@
  * @package Polylang
  */
 
-namespace WP_Syntex\Polylang\Language_Switcher;
+namespace WP_Syntex\Polylang\Widgets;
 
 use WP_Widget;
+use WP_Syntex\Polylang\Language_Switcher\Admin;
 
 /**
  * The advanced language switcher widget.
@@ -25,7 +26,7 @@ use WP_Widget;
  *     force_home: bool
  * }
  */
-class Widget extends WP_Widget {
+class Languages extends WP_Widget {
 	/**
 	 * Constructor.
 	 *
