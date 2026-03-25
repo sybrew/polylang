@@ -6,6 +6,7 @@
 namespace WP_Syntex\Polylang\Widgets;
 
 use WP_Widget;
+use PLL_Switcher;
 use WP_Syntex\Polylang\Language_Switcher\Settings;
 
 /**
@@ -13,8 +14,7 @@ use WP_Syntex\Polylang\Language_Switcher\Settings;
  *
  * @since 3.9
  *
- * @extends WP_Widget<T>
- * @phpstan-template T of array{
+ * @phpstan-type NewInstance array{
  *     title: string,
  *     layout: 'horizontal'|'vertical'|'dropdown',
  *     alignment: 'left'|'center'|'right'|'stretched',
@@ -25,6 +25,17 @@ use WP_Syntex\Polylang\Language_Switcher\Settings;
  *     hide_current: bool,
  *     force_home: bool
  * }
+ * @phpstan-type OldInstance array{
+ *     title: string,
+ *     dropdown: 0|1,
+ *     show_flags: 0|1,
+ *     show_names: 0|1,
+ *     hide_if_no_translation: 0|1,
+ *     hide_current: 0|1,
+ *     force_home: 0|1
+ * }
+ * @extends WP_Widget<T>
+ * @phpstan-template T of array
  */
 class Languages extends WP_Widget {
 	/**
@@ -34,8 +45,8 @@ class Languages extends WP_Widget {
 	 */
 	public function __construct() {
 		parent::__construct(
-			'advanced_polylang',
-			__( 'Advanced language switcher', 'polylang' ),
+			'polylang',
+			__( 'Language switcher', 'polylang' ),
 			array(
 				'description'                 => __( 'Displays a language switcher', 'polylang' ),
 				'customize_selective_refresh' => true,
@@ -67,9 +78,15 @@ class Languages extends WP_Widget {
 	 *     widget_id: string,
 	 *     widget_name: string
 	 * } $args
-	 * @phpstan-param T $instance
+	 * @phpstan-param NewInstance|OldInstance $instance
 	 */
 	public function widget( $args, $instance ): void {
+		if ( empty( PLL()->links ) ) {
+			return;
+		}
+
+		$instance = $this->maybe_convert_legacy_instance( $instance );
+
 		if ( 'dropdown' !== $instance['layout'] ) {
 			if ( empty( PLL()->switcher ) ) {
 				return;
@@ -79,7 +96,7 @@ class Languages extends WP_Widget {
 			// Sets a unique id for dropdown.
 			$languages_args = array(
 				'dropdown'               => $this->id,
-				'show_names'             => 1,
+				'show_names'             => (int) $instance['show_labels'],
 				'show_flags'             => (int) $instance['show_flags'],
 				'force_home'             => (int) $instance['force_home'],
 				'hide_current'           => (int) $instance['hide_current'],
@@ -87,13 +104,7 @@ class Languages extends WP_Widget {
 				'echo'                   => 0,
 			);
 
-			if ( empty( $instance['show_labels'] ) ) {
-				$languages_args['show_names'] = 0;
-			} elseif ( 'codes' === $instance['show_labels'] ) {
-				$languages_args['display_names_as'] = 'slug';
-			}
-
-			$list = pll_the_languages( $languages_args );
+			$list = ( new PLL_Switcher() )->the_languages( PLL()->links, $languages_args );
 		}
 
 		if ( empty( $list ) ) {
@@ -142,8 +153,8 @@ class Languages extends WP_Widget {
 	 * @param array $old_instance Old settings for this instance.
 	 * @return array|bool Settings to save or bool false to cancel saving.
 	 *
-	 * @phpstan-param T $new_instance
-	 * @phpstan-param T $old_instance
+	 * @phpstan-param NewInstance $new_instance
+	 * @phpstan-param OldInstance $old_instance
 	 */
 	public function update( $new_instance, $old_instance ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$instance = array_merge(
@@ -186,12 +197,12 @@ class Languages extends WP_Widget {
 	 * @param array $instance Current settings.
 	 * @return void
 	 *
-	 * @phpstan-param T $instance
+	 * @phpstan-param NewInstance|OldInstance $instance
 	 */
 	public function form( $instance ): void {
 		$labels_and_data = Settings::get_options();
 		$instance        = wp_parse_args(
-			(array) $instance,
+			$this->maybe_convert_legacy_instance( (array) $instance ),
 			array_merge( array( 'title' => '' ), wp_list_pluck( $labels_and_data, 'default' ) )
 		);
 
@@ -324,5 +335,35 @@ class Languages extends WP_Widget {
 			'<tr class="%s">',
 			esc_attr( implode( ' ', $classes ) )
 		);
+	}
+
+	/**
+	 * Converts the old instance format to the new one.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $instance The settings for the particular instance of the widget.
+	 * @return array
+	 *
+	 * @phpstan-param NewInstance|OldInstance $instance
+	 * @phpstan-return NewInstance
+	 */
+	private function maybe_convert_legacy_instance( array $instance ): array {
+		if ( ! isset( $instance['dropdown'] ) ) {
+			return $instance;
+		}
+
+		$instance['layout']                 = ! empty( $instance['dropdown'] ) ? 'dropdown' : 'vertical';
+		$instance['alignment']              = 'left';
+		$instance['flag_aspect_ratio']      = '32';
+		$instance['show_labels']            = ! empty( $instance['show_names'] ) ? 'names' : '';
+		$instance['show_flags']             = ! empty( $instance['show_flags'] );
+		$instance['hide_if_no_translation'] = ! empty( $instance['hide_if_no_translation'] );
+		$instance['hide_current']           = ! empty( $instance['hide_current'] );
+		$instance['force_home']             = ! empty( $instance['force_home'] );
+
+		unset( $instance['dropdown'], $instance['show_names'] );
+
+		return $instance;
 	}
 }

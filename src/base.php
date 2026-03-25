@@ -117,7 +117,6 @@ abstract class PLL_Base {
 	 * @return void
 	 */
 	public function widgets_init() {
-		register_widget( 'PLL_Widget_Languages' );
 		register_widget( Languages_Widget::class );
 
 		// Overwrites the calendar widget to filter posts by language
