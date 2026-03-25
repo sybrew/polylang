@@ -221,10 +221,14 @@ class Languages extends WP_Widget {
 		// Display labels.
 		$this->print_select( 'show_labels', $labels_and_data['show_labels'], $instance, array( 'layout' => 'dropdown' ) );
 
-		// Force link to front page, hide languages.
-		foreach ( array( 'force_home', 'hide_current', 'hide_if_no_translation' ) as $name ) {
-			$this->print_checkbox( $name, $labels_and_data[ $name ], $instance, 'hide_current' === $name ? array( 'layout' => 'dropdown' ) : array() );
-		}
+		// Force link to front page.
+		$this->print_checkbox( 'force_home', $labels_and_data['force_home'], $instance );
+
+		// Hide current language.
+		$this->print_checkbox( 'hide_current', $labels_and_data['hide_current'], $instance, array( 'layout' => 'dropdown' ) );
+
+		// Hide languages when they don't have translations.
+		$this->print_checkbox( 'hide_if_no_translation', $labels_and_data['hide_if_no_translation'], $instance, array( 'force_home' => true ) );
 
 		echo '</tbody></table>';
 	}
