@@ -6,7 +6,7 @@
 namespace WP_Syntex\Polylang\Widgets;
 
 use WP_Widget;
-use WP_Syntex\Polylang\Language_Switcher\Admin;
+use WP_Syntex\Polylang\Language_Switcher\Settings;
 
 /**
  * The advanced language switcher widget.
@@ -148,7 +148,7 @@ class Languages extends WP_Widget {
 	public function update( $new_instance, $old_instance ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$instance = array_merge(
 			array( 'title' => '' ),
-			Admin::get_options( 'default' )
+			Settings::get_options( 'default' )
 		);
 
 		if ( ! empty( $new_instance['title'] ) ) {
@@ -189,7 +189,7 @@ class Languages extends WP_Widget {
 	 * @phpstan-param T $instance
 	 */
 	public function form( $instance ): void {
-		$labels_and_data = Admin::get_options();
+		$labels_and_data = Settings::get_options();
 		$instance        = wp_parse_args(
 			(array) $instance,
 			array_merge( array( 'title' => '' ), wp_list_pluck( $labels_and_data, 'default' ) )
