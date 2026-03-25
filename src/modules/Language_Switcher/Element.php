@@ -21,6 +21,8 @@ defined( 'ABSPATH' ) || exit;
  *     url: string,
  *     label: string,
  *     flag: string,
+ *     direction: 'ltr'|'rtl',
+ *     order?: int,
  *     is_current?: bool,
  *     item_classes?: string[],
  *     link_classes?: string[]
@@ -76,6 +78,22 @@ class Element {
 	/**
 	 * @since 3.9.0
 	 *
+	 * @var string
+	 *
+	 * @phpstan-var 'ltr'|'rtl'
+	 */
+	public string $direction;
+
+	/**
+	 * @since 3.9.0
+	 *
+	 * @var int
+	 */
+	public int $order = 0;
+
+	/**
+	 * @since 3.9.0
+	 *
 	 * @var bool
 	 */
 	public $is_current = false;
@@ -108,6 +126,8 @@ class Element {
 	 *     @type string   $url          URL to link to.
 	 *     @type string   $label        Label to display.
 	 *     @type string   $flag         Flag HTML.
+	 *     @type string   $direction    Text direction. Possible values are `ltr` and `rtl`.
+	 *     @type int      $order        Optional. Language order. Default is `0`.
 	 *     @type bool     $is_current   Optional. Tells if it's the item to highlight. Default is `false`.
 	 *     @type string[] $item_classes Optional. HTML classes to add to each item. Default is an empty array.
 	 *     @type string[] $link_classes Optional. HTML classes to add to each link. Default is an empty array.

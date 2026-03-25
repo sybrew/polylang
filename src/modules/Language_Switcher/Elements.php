@@ -79,6 +79,8 @@ class Elements {
 				'locale'       => $language->get_locale( 'display' ),
 				'url'          => '',
 				'flag'         => '',
+				'direction'    => $language->is_rtl ? 'rtl' : 'ltr',
+				'order'        => (int) $language->term_group,
 				'is_current'   => $current === $language->slug,
 				'item_classes' => $item_classes,
 				'link_classes' => $this->settings->link_classes,

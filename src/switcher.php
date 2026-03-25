@@ -401,10 +401,10 @@ class PLL_Switcher {
 			$language      = $keyed_languages[ $element->slug ];
 			$data[ $slug ] = array(
 				'id'             => $element->id,
-				'order'          => $language->term_group,
+				'order'          => $element->order,
 				'slug'           => $element->slug,
 				'locale'         => $element->locale,
-				'is_rtl'         => $language->is_rtl,
+				'is_rtl'         => 'rtl' === $element->direction,
 				'name'           => isset( $settings['show_labels'] ) && 'codes' === $settings['show_labels'] ? $element->slug : $language->name,
 				'url'            => $element->url,
 				'flag'           => ! empty( $settings['show_flags'] ) ? $element->flag : $language->get_display_flag_url(),
