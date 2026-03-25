@@ -63,6 +63,11 @@ class Elements {
 		$out      = array();
 
 		foreach ( $this->languages as $language ) {
+			if ( $current === $language->slug && $this->settings->hide_current ) {
+				// Hide current item.
+				continue;
+			}
+
 			$item_classes = array_merge(
 				array( 'lang-item', "lang-item-{$language->term_id}", "lang-item-{$language->slug}" ),
 				$this->settings->item_classes
@@ -80,10 +85,6 @@ class Elements {
 			);
 
 			if ( $element['is_current'] ) {
-				if ( $this->settings->hide_current ) {
-					// Hide current item.
-					continue;
-				}
 				$element['item_classes'][] = 'current-lang';
 			}
 
