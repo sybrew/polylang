@@ -124,15 +124,15 @@ class Elements {
 	 * @phpstan-return ElementData
 	 */
 	protected function add_url( array $element, PLL_Language $language ): array {
+		if ( $this->settings->force_home ) {
+			$element['url'] = $this->links->get_home_url( $language );
+			return $element;
+		}
+
 		$element['url'] = $this->get_element_original_url( $language );
 
 		if ( empty( $element['url'] ) ) {
 			$element['item_classes'][] = 'no-translation';
-		}
-
-		if ( $this->settings->force_home ) {
-			$element['url'] = $this->links->get_home_url( $language );
-			return $element;
 		}
 
 		/**
