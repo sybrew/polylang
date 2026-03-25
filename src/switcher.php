@@ -217,7 +217,11 @@ class PLL_Switcher {
 	public function the_languages( $links, $args = array() ) {
 		$this->links = $links;
 
-		if ( empty( $args['dropdown'] ) && ! empty( PLL()->switcher ) ) {
+		if ( empty( $args['dropdown'] ) ) {
+			if ( empty( PLL()->switcher ) ) {
+				return '';
+			}
+
 			$settings = self::build_settings( $args );
 
 			if ( ! empty( $args['raw'] ) ) {
@@ -254,15 +258,11 @@ class PLL_Switcher {
 			return $elements;
 		}
 
-		if ( $args['dropdown'] ) {
-			$args['name'] = 'lang_choice_' . $args['dropdown'];
-			$args['class'] = 'pll-switcher-select';
-			$args['value'] = 'url';
-			$args['selected'] = $this->get_link( $this->links->model->get_language( $this->get_current_language( $args ) ), $args );
-			$walker = new PLL_Walker_Dropdown();
-		} else {
-			$walker = new PLL_Walker_List();
-		}
+		$args['name']     = 'lang_choice_' . $args['dropdown'];
+		$args['class']    = 'pll-switcher-select';
+		$args['value']    = 'url';
+		$args['selected'] = $this->get_link( $this->links->model->get_language( $this->get_current_language( $args ) ), $args );
+		$walker           = new PLL_Walker_Dropdown();
 
 		// Cast each element to stdClass because $walker::walk() expects an array of objects.
 		foreach ( $elements as $i => $element ) {
@@ -280,7 +280,7 @@ class PLL_Switcher {
 		$out = apply_filters( 'pll_the_languages', $walker->walk( $elements, -1, $args ), $args );
 
 		// Javascript to switch the language when using a dropdown list.
-		if ( $args['dropdown'] && 0 === $args['admin_render'] ) {
+		if ( 0 === $args['admin_render'] ) {
 			// Accept only few valid characters for the urls_x variable name (as the widget id includes '-' which is invalid).
 			$out .= sprintf(
 				'<script%1$s>
