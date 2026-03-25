@@ -154,16 +154,8 @@ class PLL_Switcher {
 				$classes[] = 'no-translation';
 			}
 
-			/**
-			 * Filter the link in the language switcher
-			 *
-			 * @since 0.7
-			 *
-			 * @param string|null $url    The link, null if no translation was found.
-			 * @param string      $slug   The language code.
-			 * @param string      $locale The language locale
-			 */
-			$url = apply_filters( 'pll_the_language_link', $url, $slug, $language->locale );
+			/** This filter is documented in src/modules/Language_Switcher/Elements.php */
+			$url = apply_filters( 'pll_the_language_link', (string) $url, $slug, $language->locale );
 
 			// Hide if no translation exists
 			if ( empty( $url ) && $args['hide_if_no_translation'] ) {
