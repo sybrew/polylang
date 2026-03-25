@@ -164,7 +164,7 @@ jQuery(
 				}
 
 				// Hide rows.
-				const $inputs = $wrapper.children( `[class*="pll-hidden-if-${ key }-"]` );
+				const $inputs = $wrapper.find( `[class*="pll-hidden-if-${ key }-"]` );
 
 				$inputs.not( `.pll-hidden-if-${ key }-${ value }` ).removeClass( `pll-hidden-by-${ key }` ); // phpcs:ignore Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword, Generic.ControlStructures.InlineControlStructure.NotAllowed
 				$inputs.filter( `.pll-hidden-if-${ key }-${ value }` ).addClass( `pll-hidden-by-${ key }` ); // phpcs:ignore Squiz.ControlStructures.ControlSignature.SpaceAfterKeyword, Generic.ControlStructures.InlineControlStructure.NotAllowed

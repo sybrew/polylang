@@ -204,7 +204,7 @@ class Languages extends WP_Widget {
 			esc_attr( $instance['title'] )
 		);
 
-		echo '<div class="advanced_polylang-widget-content">';
+		echo '<table role="presentation" class="advanced_polylang-widget-content"><tbody>';
 
 		// Layout.
 		$this->print_select( 'layout', $labels_and_data['layout'], $instance );
@@ -226,7 +226,7 @@ class Languages extends WP_Widget {
 			$this->print_checkbox( $name, $labels_and_data[ $name ], $instance, 'hide_current' === $name ? array( 'layout' => 'dropdown' ) : array() );
 		}
 
-		echo '</div>';
+		echo '</tbody></table>';
 	}
 
 	/**
@@ -244,12 +244,12 @@ class Languages extends WP_Widget {
 	private function print_select( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
 		$this->print_wrapper_start( $values, $hidden_if );
 		printf(
-			'<label for="%s">%s</label> ',
+			'<th><label for="%s">%s</label></th>',
 			esc_attr( $this->get_field_id( $key ) ),
 			esc_html( $label_and_data['label'] )
 		);
 		printf(
-			'<select data-key="%1$s" id="%2$s" name="%3$s">',
+			'<td><select data-key="%1$s" id="%2$s" name="%3$s">',
 			esc_attr( $key ),
 			esc_attr( $this->get_field_id( $key ) ),
 			esc_attr( $this->get_field_name( $key ) )
@@ -262,7 +262,7 @@ class Languages extends WP_Widget {
 				esc_html( $label )
 			);
 		}
-		echo '</select></div>';
+		echo '</select></td></tr>';
 	}
 
 	/**
@@ -280,14 +280,14 @@ class Languages extends WP_Widget {
 	private function print_checkbox( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
 		$this->print_wrapper_start( $values, $hidden_if );
 		printf(
-			'<input type="checkbox" data-key="%1$s" class="checkbox" id="%2$s" name="%3$s"%4$s/><label for="%2$s">%5$s</label>',
+			'<td colspan="2"><input type="checkbox" data-key="%1$s" class="checkbox" id="%2$s" name="%3$s"%4$s/><label for="%2$s">%5$s</label></td>',
 			esc_attr( $key ),
 			esc_attr( $this->get_field_id( $key ) ),
 			esc_attr( $this->get_field_name( $key ) ),
 			checked( $values[ $key ], true, false ),
 			esc_html( $label_and_data['label'] )
 		);
-		echo '</div>';
+		echo '</tr>';
 	}
 
 	/**
@@ -302,7 +302,7 @@ class Languages extends WP_Widget {
 	 */
 	private function print_wrapper_start( array $values, array $hidden_if ): void {
 		if ( empty( $hidden_if ) ) {
-			echo '<div>';
+			echo '<tr>';
 			return;
 		}
 
@@ -317,7 +317,7 @@ class Languages extends WP_Widget {
 		}
 
 		printf(
-			'<div class="%s">',
+			'<tr class="%s">',
 			esc_attr( implode( ' ', $classes ) )
 		);
 	}

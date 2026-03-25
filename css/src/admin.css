@@ -373,11 +373,21 @@ td.column-default_lang .icon-default-lang:before,
 }
 
 /* Widgets */
+.advanced_polylang-widget-content {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+.advanced_polylang-widget-content th {
+	width: 10em;
+	padding: 0 10px 10px 0;
+	text-align: left;
+}
+.advanced_polylang-widget-content td {
+	padding: 0 0 10px 0;
+}
 .advanced_polylang-widget-content [class*="pll-hidden-by-"] {
 	display: none;
-}
-.advanced_polylang-widget-content select {
-	margin-bottom: .5em;
 }
 
 @media screen and ( max-width: 782px ) {
