@@ -354,7 +354,7 @@ class Languages extends WP_Widget {
 		}
 
 		$instance['layout']                 = ! empty( $instance['dropdown'] ) ? 'dropdown' : 'vertical';
-		$instance['alignment']              = 'left';
+		$instance['alignment']              = is_rtl() ? 'right' : 'left';
 		$instance['flag_aspect_ratio']      = '32';
 		$instance['show_labels']            = ! empty( $instance['show_names'] ) ? 'names' : '';
 		$instance['show_flags']             = ! empty( $instance['show_flags'] );
