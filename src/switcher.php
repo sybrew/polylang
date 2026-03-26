@@ -141,7 +141,7 @@ class PLL_Switcher {
 			$current_lang = $this->get_current_language( $args ) === $slug;
 
 			if ( $current_lang ) {
-				if ( $args['hide_current'] && ! ( $args['dropdown'] && ! $args['raw'] ) ) {
+				if ( $args['hide_current'] && ( ! $args['dropdown'] || $args['raw'] ) ) {
 					continue; // Hide current language except for dropdown
 				} else {
 					$classes[] = 'current-lang';

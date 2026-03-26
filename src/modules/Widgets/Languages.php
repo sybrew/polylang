@@ -16,7 +16,7 @@ use WP_Syntex\Polylang\Language_Switcher\Settings;
  *
  * @phpstan-type NewInstance array{
  *     title: string,
- *     layout: 'horizontal'|'vertical'|'dropdown',
+ *     layout: 'horizontal'|'vertical'|'dropdown'|'select',
  *     alignment: 'left'|'center'|'right'|'stretched',
  *     show_flags: bool,
  *     flag_aspect_ratio: '32'|'11',
@@ -87,13 +87,13 @@ class Languages extends WP_Widget {
 
 		$instance = $this->maybe_convert_legacy_instance( $instance );
 
-		if ( 'dropdown' !== $instance['layout'] ) {
+		if ( 'select' !== $instance['layout'] ) {
 			if ( empty( PLL()->switcher ) ) {
 				return;
 			}
 			$list = PLL()->switcher->get( $instance, PLL()->links );
 		} else {
-			// Sets a unique id for dropdown.
+			// Sets a unique id for select.
 			$languages_args = array(
 				'dropdown'               => $this->id,
 				'show_names'             => (int) $instance['show_labels'],
@@ -120,8 +120,8 @@ class Languages extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title']; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 
-		if ( 'dropdown' === $instance['layout'] ) {
-			printf( '<div class="pll-switcher pll-layout-dropdown pll-alignment-%s">', esc_attr( $instance['alignment'] ) );
+		if ( 'select' === $instance['layout'] ) {
+			printf( '<div class="pll-switcher pll-layout-select pll-alignment-%s">', esc_attr( $instance['alignment'] ) );
 
 			// The title may be filtered: Strip out HTML and make sure the aria-label is never empty.
 			$aria_label = trim( wp_strip_all_tags( $title ) );
@@ -166,7 +166,7 @@ class Languages extends WP_Widget {
 			$instance['title'] = sanitize_text_field( $new_instance['title'] );
 		}
 
-		if ( isset( $new_instance['layout'] ) && in_array( $new_instance['layout'], array( 'dropdown', 'horizontal', 'vertical' ), true ) ) {
+		if ( isset( $new_instance['layout'] ) && in_array( $new_instance['layout'], array( 'select', 'dropdown', 'horizontal', 'vertical' ), true ) ) {
 			$instance['layout'] = $new_instance['layout'];
 		}
 
@@ -224,19 +224,19 @@ class Languages extends WP_Widget {
 		$this->print_select( 'alignment', $labels_and_data['alignment'], $instance );
 
 		// Display flags.
-		$this->print_checkbox( 'show_flags', $labels_and_data['show_flags'], $instance, array( 'layout' => 'dropdown' ) );
+		$this->print_checkbox( 'show_flags', $labels_and_data['show_flags'], $instance, array( 'layout' => 'select' ) );
 
 		// Flag aspect ratio.
-		$this->print_select( 'flag_aspect_ratio', $labels_and_data['flag_aspect_ratio'], $instance, array( 'layout' => 'dropdown', 'show_flags' => false ) );
+		$this->print_select( 'flag_aspect_ratio', $labels_and_data['flag_aspect_ratio'], $instance, array( 'layout' => 'select', 'show_flags' => false ) );
 
 		// Display labels.
-		$this->print_select( 'show_labels', $labels_and_data['show_labels'], $instance, array( 'layout' => 'dropdown' ) );
+		$this->print_select( 'show_labels', $labels_and_data['show_labels'], $instance, array( 'layout' => 'select' ) );
 
 		// Force link to front page.
 		$this->print_checkbox( 'force_home', $labels_and_data['force_home'], $instance );
 
 		// Hide current language.
-		$this->print_checkbox( 'hide_current', $labels_and_data['hide_current'], $instance, array( 'layout' => 'dropdown' ) );
+		$this->print_checkbox( 'hide_current', $labels_and_data['hide_current'], $instance, array( 'layout' => 'select' ) );
 
 		// Hide languages when they don't have translations.
 		$this->print_checkbox( 'hide_if_no_translation', $labels_and_data['hide_if_no_translation'], $instance, array( 'force_home' => true ) );
@@ -253,7 +253,7 @@ class Languages extends WP_Widget {
 	 * @param array           $label_and_data Setting label and choices.
 	 * @param (string|bool)[] $values         Widget's settings.
 	 * @param (string|bool)[] $hidden_if      Optional. Hides the input if the given conditions are met. Default is an empty array.
-	 *                                        Ex: `array( 'layout' => 'dropdown' )` will hide the input if the layout is `dropdown`.
+	 *                                        Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
 	 * @return void
 	 */
 	private function print_select( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
@@ -289,7 +289,7 @@ class Languages extends WP_Widget {
 	 * @param array           $label_and_data Setting label.
 	 * @param (string|bool)[] $values         Widget's settings.
 	 * @param (string|bool)[] $hidden_if      Optional. Hides the input if the given conditions are met. Default is an empty array.
-	 *                                        Ex: `array( 'layout' => 'dropdown' )` will hide the input if the layout is `dropdown`.
+	 *                                        Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
 	 * @return void
 	 */
 	private function print_checkbox( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
@@ -312,7 +312,7 @@ class Languages extends WP_Widget {
 	 *
 	 * @param (string|bool)[] $values    Widget's settings.
 	 * @param (string|bool)[] $hidden_if Hides the input if the given conditions are met.
-	 *                                   Ex: `array( 'layout' => 'dropdown' )` will hide the input if the layout is `dropdown`.
+	 *                                   Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
 	 * @return void
 	 */
 	private function print_wrapper_start( array $values, array $hidden_if ): void {
@@ -353,7 +353,7 @@ class Languages extends WP_Widget {
 			return $instance;
 		}
 
-		$instance['layout']                 = ! empty( $instance['dropdown'] ) ? 'dropdown' : 'vertical';
+		$instance['layout']                 = ! empty( $instance['dropdown'] ) ? 'select' : 'vertical';
 		$instance['alignment']              = is_rtl() ? 'right' : 'left';
 		$instance['flag_aspect_ratio']      = '32';
 		$instance['show_labels']            = ! empty( $instance['show_names'] ) ? 'names' : '';

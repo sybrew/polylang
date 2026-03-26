@@ -44,6 +44,7 @@ class Switcher {
 	public function init(): self {
 		if ( $this->model->has_languages() ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_admin_styles' ) );
 		}
 		return $this;
@@ -59,7 +60,20 @@ class Switcher {
 	public function enqueue_styles(): void {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_style( 'pll-language-switcher', plugins_url( "/css/build/switcher{$suffix}.css", POLYLANG_FILE ), array(), POLYLANG_FILE );
+		wp_enqueue_style( 'pll-language-switcher', plugins_url( "/css/build/switcher{$suffix}.css", POLYLANG_FILE ), array(), POLYLANG_VERSION );
+	}
+
+	/**
+	 * Enqueues CSS styles.
+	 *
+	 * @since 3.9
+	 *
+	 * @return void
+	 */
+	public function enqueue_scripts(): void {
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( 'pll-language-switcher', plugins_url( "/js/build/switcher{$suffix}.js", POLYLANG_FILE ), array(), POLYLANG_VERSION, true );
 	}
 
 	/**
@@ -163,6 +177,9 @@ class Switcher {
 			case 'horizontal':
 			case 'vertical':
 				return new Nav\Switcher( $settings, $links );
+
+			case 'dropdown':
+				return new Dropdown\Switcher( $settings, $links );
 
 			default:
 				return null;

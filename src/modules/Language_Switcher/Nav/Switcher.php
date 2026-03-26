@@ -86,25 +86,37 @@ class Switcher extends Abstract_Switcher {
 			$link_atts .= ' aria-current="true"';
 		}
 
-		if ( ! empty( $element->flag ) && ! empty( $element->label ) ) {
-			$label = sprintf(
-				'<span>%s</span><span>%s</span>',
-				(string) preg_replace( '/ style="[^"]*"/', '', $element->flag ),
-				esc_html( $element->label )
-			);
-		} elseif ( ! empty( $element->flag ) ) {
-			$label = (string) preg_replace( '/ style="[^"]*"/', '', $element->flag );
-		} else {
-			$label = esc_html( $element->label );
-		}
-
 		$out = sprintf(
 			'<li class="%s"><a %s>%s</a></li>',
 			esc_attr( implode( ' ', $element->item_classes ) ),
 			$link_atts,
-			$label
+			$this->get_item_label( $element )
 		);
 
 		return "\t{$out}\n";
+	}
+
+	/**
+	 * Returns the markup of the label of an item.
+	 *
+	 * @since 3.9
+	 *
+	 * @param Element $element An element.
+	 * @return string
+	 */
+	protected function get_item_label( Element $element ): string {
+		if ( ! empty( $element->flag ) && ! empty( $element->label ) ) {
+			return sprintf(
+				'<span>%s</span><span>%s</span>',
+				(string) preg_replace( '/ style="[^"]*"/', '', $element->flag ),
+				esc_html( $element->label )
+			);
+		}
+
+		if ( ! empty( $element->flag ) ) {
+			return (string) preg_replace( '/ style="[^"]*"/', '', $element->flag );
+		}
+
+		return esc_html( $element->label );
 	}
 }
