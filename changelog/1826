@@ -1,0 +1,1 @@
+* Fix the synchronization of meta values when updating a meta with multiple values (#1826)
