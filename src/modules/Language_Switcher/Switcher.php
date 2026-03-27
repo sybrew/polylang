@@ -74,6 +74,9 @@ class Switcher {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
 		wp_enqueue_script( 'pll-language-switcher', plugins_url( "/js/build/switcher{$suffix}.js", POLYLANG_FILE ), array(), POLYLANG_VERSION, true );
+
+		$i18n = array( 'openDropdown' => __( 'Open languages submenu', 'polylang' ), 'closeDropdown' => __( 'Close languages submenu', 'polylang' ) );
+		wp_localize_script( 'pll-language-switcher', 'pllSwitcherI18n', $i18n );
 	}
 
 	/**

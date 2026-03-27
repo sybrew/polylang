@@ -119,7 +119,7 @@ class Switcher extends Nav\Switcher {
 		$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false"><path d="M1.50002 4L6.00002 8L10.5 4" stroke-width="1.5"></path></svg>';
 		return sprintf(
 			'<button aria-label="%1$s" class="pll-submenu-toggle" aria-expanded="false">%2$s</button>',
-			esc_attr( __( 'Languages submenu', 'polylang' ) ),
+			esc_attr( __( 'Open languages submenu', 'polylang' ) ),
 			$svg
 		);
 	}

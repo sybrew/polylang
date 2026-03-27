@@ -4,7 +4,7 @@
  * @package Polylang
  */
 
-const pllNavMenu = {
+const pllSwitcher = {
 	/**
 	 * The element wrapping the menu elements.
 	 *
@@ -17,9 +17,9 @@ const pllNavMenu = {
 	 */
 	init: () => {
 		if ( document.readyState !== 'loading' ) {
-			pllNavMenu.ready();
+			pllSwitcher.ready();
 		} else {
-			document.addEventListener( 'DOMContentLoaded', pllNavMenu.ready );
+			document.addEventListener( 'DOMContentLoaded', pllSwitcher.ready );
 		}
 	},
 
@@ -27,10 +27,10 @@ const pllNavMenu = {
 	 * Called when the DOM is ready. Attaches the events to the wrapper.
 	 */
 	ready: () => {
-		pllNavMenu.buttons = document.getElementsByClassName( 'pll-submenu-toggle' );
+		pllSwitcher.buttons = document.getElementsByClassName( 'pll-submenu-toggle' );
 
-		for ( var i = 0; i < pllNavMenu.buttons.length; i++ ) {
-			pllNavMenu.buttons[ i ].addEventListener( 'click', pllNavMenu.openCloseSubmenu );
+		for ( var i = 0; i < pllSwitcher.buttons.length; i++ ) {
+			pllSwitcher.buttons[ i ].addEventListener( 'click', pllSwitcher.openCloseSubmenu );
 		}
 	},
 
@@ -43,8 +43,9 @@ const pllNavMenu = {
 		handleEvent: ( event ) => {
 			const expanded = event.currentTarget.getAttribute( 'aria-expanded' );
 			event.currentTarget.setAttribute( 'aria-expanded', 'true' === expanded ? 'false' : 'true' );
+			event.currentTarget.setAttribute( 'aria-label', 'true' === expanded ? pllSwitcherI18n.openDropdown : pllSwitcherI18n.closeDropdown );
 		}
 	}
 };
 
-pllNavMenu.init();
+pllSwitcher.init();
