@@ -185,6 +185,7 @@ class Settings {
 
 		if ( 'select' === $this->layout ) {
 			$this->show_flags   = false;
+			$this->show_labels  = 'names';
 			$this->hide_current = false;
 		}
 
