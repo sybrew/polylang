@@ -24,7 +24,7 @@ class Dropdown extends Nav {
 	 * @return string
 	 */
 	public function get( array $languages ): string {
-		$out      = "\n";
+		$out      = '';
 		$current  = null;
 		$elements = array();
 
@@ -50,8 +50,8 @@ class Dropdown extends Nav {
 
 		$out = implode( $elements );
 
-		if ( ! $this->settings->show_wrapper || trim( $out ) === '' || empty( $current ) ) {
-			return $out;
+		if ( ! $this->settings->show_wrapper || empty( $out ) || empty( $current ) ) {
+			return $this->filter_output( $out );
 		}
 
 		$out = sprintf(
@@ -62,10 +62,10 @@ class Dropdown extends Nav {
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
 			$this->get_current_item( $current ),
 			$this->get_button(),
-			$out
+			"\n{$out}"
 		);
 
-		return "\n{$out}\n";
+		return $this->filter_output( "\n{$out}\n" );
 	}
 
 	/**

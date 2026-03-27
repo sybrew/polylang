@@ -24,14 +24,14 @@ class Nav extends Abstract_Switcher {
 	 * @return string
 	 */
 	public function get( array $languages ): string {
-		$out = "\n";
+		$out = '';
 
 		foreach ( $this->get_elements( $languages )->get() as $element ) {
 			$out .= $this->get_item( $element );
 		}
 
-		if ( ! $this->settings->show_wrapper || trim( $out ) === '' ) {
-			return $out;
+		if ( ! $this->settings->show_wrapper || empty( $out ) ) {
+			return $this->filter_output( $out );
 		}
 
 		$out = sprintf(
@@ -40,10 +40,10 @@ class Nav extends Abstract_Switcher {
 			esc_attr( $this->settings->unique_id ),
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
-			$out
+			"\n{$out}"
 		);
 
-		return "\n{$out}\n";
+		return $this->filter_output( "\n{$out}\n" );
 	}
 
 	/**
