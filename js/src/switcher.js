@@ -1,12 +1,14 @@
 /**
- * Handles the options in the language switcher nav menu metabox.
+ * Allows to open/close the language switcher's submenus on click when the "dropdown" layout is used.
  *
  * @package Polylang
  */
 
+/* global pllSwitcherI18n */
+
 const pllSwitcher = {
 	/**
-	 * The element wrapping the menu elements.
+	 * The buttons alllowing to open/close the submenus.
 	 *
 	 * @member {HTMLElement|null}
 	 */
@@ -24,7 +26,7 @@ const pllSwitcher = {
 	},
 
 	/**
-	 * Called when the DOM is ready. Attaches the events to the wrapper.
+	 * Called when the DOM is ready. Attaches the events to the buttons.
 	 */
 	ready: () => {
 		pllSwitcher.buttons = document.getElementsByClassName( 'pll-submenu-toggle' );
