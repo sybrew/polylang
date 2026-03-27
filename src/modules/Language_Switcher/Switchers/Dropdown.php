@@ -65,24 +65,11 @@ class Dropdown extends Nav {
 			return $out;
 		}
 
-		$outer_wrapper_classes = array_merge(
-			$this->settings->wrapper_classes,
-			array(
-				'pll-switcher',
-				"pll-layout-{$this->settings->layout}",
-				"pll-alignment-{$this->settings->alignment}",
-			)
-		);
-
-		if ( $this->settings->show_flags ) {
-			$outer_wrapper_classes[] = "pll-aspect-ratio-{$this->settings->flag_aspect_ratio}";
-		}
-
 		$tag = $this->supports_html5() ? 'nav' : 'div';
 		$out = sprintf(
 			'<%1$s class="%2$s" aria-label="%3$s">%4$s</%1$s>',
 			$tag,
-			esc_attr( implode( ' ', $outer_wrapper_classes ) ),
+			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
 			$out
 		);

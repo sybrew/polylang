@@ -63,6 +63,30 @@ abstract class Abstract_Switcher {
 	}
 
 	/**
+	 * Returns the list of HTML classes to add to the wrapper tag.
+	 *
+	 * @since 3.9.0
+	 *
+	 * @return string[]
+	 */
+	protected function get_wrapper_classes(): array {
+		$classes = array_merge(
+			$this->settings->wrapper_classes,
+			array(
+				'pll-switcher',
+				"pll-layout-{$this->settings->layout}",
+				"pll-alignment-{$this->settings->alignment}",
+			)
+		);
+
+		if ( $this->settings->show_flags ) {
+			$classes[] = "pll-aspect-ratio-{$this->settings->flag_aspect_ratio}";
+		}
+
+		return $classes;
+	}
+
+	/**
 	 * Tells whether the current theme supports HTML5.
 	 *
 	 * @since 3.9.0
