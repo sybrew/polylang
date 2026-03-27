@@ -173,16 +173,16 @@ class Switcher {
 	 *
 	 * @param Settings  $settings Instance of `Settings`.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
-	 * @return Base\Abstract_Switcher|null
+	 * @return Switchers\Abstract_Switcher|null
 	 */
-	private function get_switcher( Settings $settings, PLL_Links $links ): ?Base\Abstract_Switcher {
+	private function get_switcher( Settings $settings, PLL_Links $links ): ?Switchers\Abstract_Switcher {
 		switch ( $settings->layout ) {
 			case 'horizontal':
 			case 'vertical':
-				return new Nav\Switcher( $settings, $links );
+				return new Switchers\Nav( $settings, $links );
 
 			case 'dropdown':
-				return new Dropdown\Switcher( $settings, $links );
+				return new Switchers\Dropdown( $settings, $links );
 
 			default:
 				return null;

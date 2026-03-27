@@ -3,10 +3,9 @@
  * @package Polylang
  */
 
-namespace WP_Syntex\Polylang\Language_Switcher\Nav;
+namespace WP_Syntex\Polylang\Language_Switcher\Switchers;
 
 use WP_Syntex\Polylang\Language_Switcher\Element;
-use WP_Syntex\Polylang\Language_Switcher\Base\Abstract_Switcher;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 3.9
  */
-class Switcher extends Abstract_Switcher {
+class Nav extends Abstract_Switcher {
 	/**
 	 * Returns the markup of the switcher.
 	 *
