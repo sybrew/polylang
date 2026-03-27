@@ -184,6 +184,9 @@ class Switcher {
 			case 'dropdown':
 				return new Switchers\Dropdown( $settings, $links );
 
+			case 'select':
+				return new Switchers\Select( $settings, $links );
+
 			default:
 				return null;
 		}

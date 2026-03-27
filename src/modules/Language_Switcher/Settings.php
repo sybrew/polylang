@@ -30,8 +30,8 @@ defined( 'ABSPATH' ) || exit;
  *     wrapper_classes?: non-empty-string[],
  *     item_classes?: non-empty-string[],
  *     link_classes?: non-empty-string[],
- *     context?: 'frontend'|'admin',
- *     current_language_code?: string
+ *     current_language_code?: string,
+ *     unique_id?: string
  * }
  */
 class Settings {
@@ -121,15 +121,18 @@ class Settings {
 
 	/**
 	 * @var string
-	 *
-	 * @phpstan-var 'frontend'|'admin'
 	 */
-	public string $context = 'frontend';
+	public string $current_language_code = '';
 
 	/**
 	 * @var string
 	 */
-	public string $current_language_code = '';
+	public string $unique_id = '';
+
+	/**
+	 * @var int
+	 */
+	private static int $increment = 0;
 
 	/**
 	 * Constructor.
@@ -158,9 +161,8 @@ class Settings {
 	 *     @type string[] $wrapper_classes        HTML classes to add to the wrapper. Default is an empty array.
 	 *     @type string[] $item_classes           HTML classes to add to each item. Default is an empty array.
 	 *     @type string[] $link_classes           HTML classes to add to each link. Default is an empty array.
-	 *     @type string   $context                Tell in which context the switcher is displayed. Possible values are
-	 *                                            `frontend`, `admin`. Default is `frontend`.
 	 *     @type string   $current_language_code  Current language's code.
+	 *     @type string   $unique_id              A unique identifier. Default is an empty string.
 	 * }
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 *
@@ -174,10 +176,16 @@ class Settings {
 		 *
 		 * @param array $settings Settings.
 		 */
-		$settings = apply_filters( 'pll_language_switcher_settings', $settings );
+		$settings   = apply_filters( 'pll_language_switcher_settings', $settings );
+		$properties = array_diff_key( get_class_vars( self::class ), array( 'increment' => 0 ) );
 
-		foreach ( array_intersect_key( $settings, get_class_vars( self::class ) ) as $name => $value ) {
+		foreach ( array_intersect_key( $settings, $properties ) as $name => $value ) {
 			$this->$name = $value;
+		}
+
+		if ( 'select' === $this->layout ) {
+			$this->show_flags   = false;
+			$this->hide_current = false;
 		}
 
 		if ( ! $this->show_flags && empty( $this->show_labels ) ) {
@@ -185,9 +193,14 @@ class Settings {
 			$this->show_labels = 'names';
 		}
 
-		if ( $links instanceof PLL_Admin_Links ) {
+		if ( $links instanceof PLL_Admin_Links || $this->force_home ) {
 			// Force not to hide the language for the widget preview even if the option is checked.
 			$this->hide_if_no_translation = false;
+		}
+
+		if ( '' === $this->unique_id ) {
+			++self::$increment;
+			$this->unique_id = (string) self::$increment;
 		}
 	}
 

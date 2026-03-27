@@ -15,6 +15,13 @@ const pllSwitcher = {
 	buttons: null,
 
 	/**
+	 * The `select` tags.
+	 *
+	 * @member {HTMLElement|null}
+	 */
+	selects: null,
+
+	/**
 	 * Init.
 	 */
 	init: () => {
@@ -30,10 +37,17 @@ const pllSwitcher = {
 	 */
 	ready: () => {
 		pllSwitcher.buttons = document.getElementsByClassName( 'pll-submenu-toggle' );
-		const len = pllSwitcher.buttons.length;
+		const lenButtons = pllSwitcher.buttons.length;
 
-		for ( var i = 0; i < len; i++ ) {
+		for ( var i = 0; i < lenButtons; i++ ) {
 			pllSwitcher.buttons[ i ].addEventListener( 'click', pllSwitcher.openCloseSubmenu );
+		}
+
+		pllSwitcher.selects = document.getElementsByClassName( 'pll-switcher-select' );
+		const lenSelects = pllSwitcher.selects.length;
+
+		for ( var i = 0; i < lenSelects; i++ ) {
+			pllSwitcher.selects[ i ].addEventListener( 'change', pllSwitcher.changeLocationSelect );
 		}
 	},
 
@@ -47,6 +61,17 @@ const pllSwitcher = {
 			const expanded = event.currentTarget.getAttribute( 'aria-expanded' );
 			event.currentTarget.setAttribute( 'aria-expanded', 'true' === expanded ? 'false' : 'true' );
 			event.currentTarget.setAttribute( 'aria-label', 'true' === expanded ? pllSwitcherI18n.openDropdown : pllSwitcherI18n.closeDropdown );
+		}
+	},
+
+	changeLocationSelect: {
+		/**
+		 * Event callback that changes the location when a value is selected in the `select` switcher.
+		 *
+		 * @param {Event} event The event.
+		 */
+		handleEvent: ( event ) => {
+			location.href = event.currentTarget.value;
 		}
 	}
 };

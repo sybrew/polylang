@@ -6,7 +6,6 @@
 namespace WP_Syntex\Polylang\Widgets;
 
 use WP_Widget;
-use PLL_Switcher;
 use WP_Syntex\Polylang\Language_Switcher\Settings;
 
 /**
@@ -81,31 +80,12 @@ class Languages extends WP_Widget {
 	 * @phpstan-param NewInstance|OldInstance $instance
 	 */
 	public function widget( $args, $instance ): void {
-		if ( empty( PLL()->links ) ) {
+		if ( empty( PLL()->links ) || empty( PLL()->switcher ) ) {
 			return;
 		}
 
 		$instance = $this->maybe_convert_legacy_instance( $instance );
-
-		if ( 'select' !== $instance['layout'] ) {
-			if ( empty( PLL()->switcher ) ) {
-				return;
-			}
-			$list = PLL()->switcher->get( $instance, PLL()->links );
-		} else {
-			// Sets a unique id for select.
-			$languages_args = array(
-				'dropdown'               => $this->id,
-				'show_names'             => (int) $instance['show_labels'],
-				'show_flags'             => (int) $instance['show_flags'],
-				'force_home'             => (int) $instance['force_home'],
-				'hide_current'           => (int) $instance['hide_current'],
-				'hide_if_no_translation' => (int) $instance['hide_if_no_translation'],
-				'echo'                   => 0,
-			);
-
-			$list = ( new PLL_Switcher() )->the_languages( PLL()->links, $languages_args );
-		}
+		$list     = PLL()->switcher->get( $instance, PLL()->links );
 
 		if ( empty( $list ) ) {
 			return;
@@ -120,26 +100,7 @@ class Languages extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title']; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 
-		if ( 'select' === $instance['layout'] ) {
-			printf( '<div class="pll-switcher pll-layout-select pll-alignment-%s">', esc_attr( $instance['alignment'] ) );
-
-			// The title may be filtered: Strip out HTML and make sure the aria-label is never empty.
-			$aria_label = trim( wp_strip_all_tags( $title ) );
-
-			if ( ! $aria_label ) {
-				$aria_label = __( 'Choose a language', 'polylang' );
-			}
-
-			printf(
-				'<label class="screen-reader-text" for="lang_choice_%s">%s</label>',
-				esc_attr( (string) $languages_args['dropdown'] ),
-				esc_html( $aria_label )
-			);
-
-			echo "{$list}</div>"; // phpcs:ignore WordPress.Security.EscapeOutput
-		} else {
-			echo $list; // phpcs:ignore WordPress.Security.EscapeOutput
-		}
+		echo $list; // phpcs:ignore WordPress.Security.EscapeOutput
 
 		echo $args['after_widget']; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
