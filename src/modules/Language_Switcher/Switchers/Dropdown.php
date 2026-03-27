@@ -66,8 +66,9 @@ class Dropdown extends Nav {
 		}
 
 		$out = sprintf(
-			'<%1$s class="%2$s" aria-label="%3$s">%4$s</%1$s>',
+			'<%1$s id="pll-switcher-%2$s" class="%3$s" aria-label="%4$s">%5$s</%1$s>',
 			$this->supports_html5() ? 'nav' : 'div',
+			esc_attr( $this->settings->unique_id ),
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
 			$out
