@@ -1517,10 +1517,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/walker-dropdown.php
-
-		-
-			message: '#^Parameter \#1 \$text of function esc_attr expects string, bool\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/modules/Widgets/widget-languages.php
-
