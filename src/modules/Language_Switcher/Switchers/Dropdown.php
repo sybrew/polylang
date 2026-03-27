@@ -10,7 +10,7 @@ use WP_Syntex\Polylang\Language_Switcher\Element;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class that displays a language switcher as a list.
+ * Class that displays a language switcher as a dropdown.
  *
  * @since 3.9
  */
