@@ -50,27 +50,18 @@ class Dropdown extends Nav {
 
 		$out = implode( $elements );
 
-		if ( trim( $out ) === '' || empty( $current ) ) {
+		if ( ! $this->settings->show_wrapper || trim( $out ) === '' || empty( $current ) ) {
 			return $out;
 		}
 
 		$out = sprintf(
-			"\n%s%s<ul>%s</ul>",
-			$this->get_current_item( $current ),
-			$this->get_button(),
-			$out
-		);
-
-		if ( ! $this->settings->show_wrapper ) {
-			return $out;
-		}
-
-		$out = sprintf(
-			'<%1$s id="pll-switcher-%2$s" class="%3$s" aria-label="%4$s">%5$s</%1$s>',
+			'<%1$s id="pll-switcher-%2$s" class="%3$s" aria-label="%4$s">%5$s%6$s<ul>%7$s</ul></%1$s>',
 			$this->supports_html5() ? 'nav' : 'div',
 			esc_attr( $this->settings->unique_id ),
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
+			$this->get_current_item( $current ),
+			$this->get_button(),
 			$out
 		);
 
