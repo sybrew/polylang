@@ -30,8 +30,9 @@ const pllSwitcher = {
 	 */
 	ready: () => {
 		pllSwitcher.buttons = document.getElementsByClassName( 'pll-submenu-toggle' );
+		const len = pllSwitcher.buttons.length;
 
-		for ( var i = 0; i < pllSwitcher.buttons.length; i++ ) {
+		for ( var i = 0; i < len; i++ ) {
 			pllSwitcher.buttons[ i ].addEventListener( 'click', pllSwitcher.openCloseSubmenu );
 		}
 	},
