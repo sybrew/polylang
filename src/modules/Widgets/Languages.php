@@ -185,22 +185,22 @@ class Languages extends WP_Widget {
 		$this->print_select( 'alignment', $labels_and_data['alignment'], $instance );
 
 		// Display flags.
-		$this->print_checkbox( 'show_flags', $labels_and_data['show_flags'], $instance, array( 'layout' => 'select' ) );
+		$this->print_checkbox( 'show_flags', $labels_and_data['show_flags'], $instance );
 
 		// Flag aspect ratio.
-		$this->print_select( 'flag_aspect_ratio', $labels_and_data['flag_aspect_ratio'], $instance, array( 'layout' => 'select', 'show_flags' => false ) );
+		$this->print_select( 'flag_aspect_ratio', $labels_and_data['flag_aspect_ratio'], $instance );
 
 		// Display labels.
-		$this->print_select( 'show_labels', $labels_and_data['show_labels'], $instance, array( 'layout' => 'select' ) );
+		$this->print_select( 'show_labels', $labels_and_data['show_labels'], $instance );
 
 		// Force link to front page.
 		$this->print_checkbox( 'force_home', $labels_and_data['force_home'], $instance );
 
 		// Hide current language.
-		$this->print_checkbox( 'hide_current', $labels_and_data['hide_current'], $instance, array( 'layout' => 'select' ) );
+		$this->print_checkbox( 'hide_current', $labels_and_data['hide_current'], $instance );
 
 		// Hide languages when they don't have translations.
-		$this->print_checkbox( 'hide_if_no_translation', $labels_and_data['hide_if_no_translation'], $instance, array( 'force_home' => true ) );
+		$this->print_checkbox( 'hide_if_no_translation', $labels_and_data['hide_if_no_translation'], $instance );
 
 		echo '</tbody></table>';
 	}
@@ -211,14 +211,12 @@ class Languages extends WP_Widget {
 	 * @since 3.9
 	 *
 	 * @param string          $key            Setting key.
-	 * @param array           $label_and_data Setting label and choices.
+	 * @param array           $label_and_data Setting label and other data.
 	 * @param (string|bool)[] $values         Widget's settings.
-	 * @param (string|bool)[] $hidden_if      Optional. Hides the input if the given conditions are met. Default is an empty array.
-	 *                                        Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
 	 * @return void
 	 */
-	private function print_select( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
-		$this->print_wrapper_start( $values, $hidden_if );
+	private function print_select( string $key, array $label_and_data, array $values ): void {
+		$this->print_wrapper_start( $label_and_data, $values );
 		printf(
 			'<th><label for="%s">%s</label></th>',
 			esc_attr( $this->get_field_id( $key ) ),
@@ -247,14 +245,12 @@ class Languages extends WP_Widget {
 	 * @since 3.9
 	 *
 	 * @param string          $key            Setting key.
-	 * @param array           $label_and_data Setting label.
+	 * @param array           $label_and_data Setting label and other data.
 	 * @param (string|bool)[] $values         Widget's settings.
-	 * @param (string|bool)[] $hidden_if      Optional. Hides the input if the given conditions are met. Default is an empty array.
-	 *                                        Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
 	 * @return void
 	 */
-	private function print_checkbox( string $key, array $label_and_data, array $values, array $hidden_if = array() ): void {
-		$this->print_wrapper_start( $values, $hidden_if );
+	private function print_checkbox( string $key, array $label_and_data, array $values ): void {
+		$this->print_wrapper_start( $label_and_data, $values );
 		printf(
 			'<td colspan="2"><input type="checkbox" data-key="%1$s" class="checkbox" id="%2$s" name="%3$s"%4$s/><label for="%2$s">%5$s</label></td>',
 			esc_attr( $key ),
@@ -271,20 +267,19 @@ class Languages extends WP_Widget {
 	 *
 	 * @since 3.9
 	 *
-	 * @param (string|bool)[] $values    Widget's settings.
-	 * @param (string|bool)[] $hidden_if Hides the input if the given conditions are met.
-	 *                                   Ex: `array( 'layout' => 'select' )` will hide the input if the layout is `select`.
+	 * @param array           $label_and_data Setting label and other data.
+	 * @param (string|bool)[] $values         Widget's settings.
 	 * @return void
 	 */
-	private function print_wrapper_start( array $values, array $hidden_if ): void {
-		if ( empty( $hidden_if ) ) {
+	private function print_wrapper_start( array $label_and_data, array $values ): void {
+		if ( empty( $label_and_data['conditions'] ) ) {
 			echo '<tr>';
 			return;
 		}
 
 		$classes = array();
 
-		foreach ( $hidden_if as $key => $value ) {
+		foreach ( $label_and_data['conditions'] as $key => $value ) {
 			if ( $values[ $key ] === $value ) {
 				$classes[] = "pll-hidden-by-{$key}";
 			}

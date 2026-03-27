@@ -209,9 +209,12 @@ class Settings {
 	 *
 	 * @since 3.9
 	 *
-	 * @param string $key Optional. Either `string` to return option labels, `default` to return default values, `choices` to return choices, or an empty string to return everything.
-	 *                    Defaults to an empty string.
+	 * @param string $key Optional. Either `label` to return option labels, `default` to return default values,
+	 *                    `choices` to return choices, `conditions` to return conditions, or an empty string to return
+	 *                    everything. Defaults to an empty string.
 	 * @return array List of switcher options strings, default values, options, or everything.
+	 *
+	 * @phpstan-param ''|'label'|'default'|'choices'|'conditions' $key
 	 */
 	public static function get_options( string $key = '' ): array {
 		$options = array(
@@ -236,24 +239,34 @@ class Settings {
 				),
 			),
 			'show_flags'             => array(
-				'label'   => __( 'Display flags', 'polylang' ),
-				'default' => false,
+				'label'      => __( 'Display flags', 'polylang' ),
+				'default'    => false,
+				'conditions' => array(
+					'layout' => 'select',
+				),
 			),
 			'flag_aspect_ratio'      => array(
-				'label'   => __( 'Flags aspect ratio:', 'polylang' ),
-				'default' => '32',
-				'choices' => array(
+				'label'      => __( 'Flags aspect ratio:', 'polylang' ),
+				'default'    => '32',
+				'choices'    => array(
 					'32' => '3:2',
 					'11' => '1:1',
 				),
+				'conditions' => array(
+					'layout'     => 'select',
+					'show_flags' => false,
+				),
 			),
 			'show_labels'            => array(
-				'label'   => __( 'Display labels:', 'polylang' ),
-				'default' => 'names',
-				'choices' => array(
+				'label'      => __( 'Display labels:', 'polylang' ),
+				'default'    => 'names',
+				'choices'    => array(
 					''      => __( 'No', 'polylang' ),
 					'names' => __( 'Language names', 'polylang' ),
 					'codes' => __( 'Language codes', 'polylang' ),
+				),
+				'conditions' => array(
+					'layout' => 'select',
 				),
 			),
 			'force_home'             => array(
@@ -261,12 +274,18 @@ class Settings {
 				'default' => false,
 			),
 			'hide_current'           => array(
-				'label'   => __( 'Hide the current language', 'polylang' ),
-				'default' => false,
+				'label'      => __( 'Hide the current language', 'polylang' ),
+				'default'    => false,
+				'conditions' => array(
+					'layout' => 'select',
+				),
 			),
 			'hide_if_no_translation' => array(
-				'label'   => __( 'Hide languages with no translation', 'polylang' ),
-				'default' => false,
+				'label'      => __( 'Hide languages with no translation', 'polylang' ),
+				'default'    => false,
+				'conditions' => array(
+					'force_home' => true,
+				),
 			),
 		);
 
@@ -274,11 +293,11 @@ class Settings {
 			return $options;
 		}
 
-		if ( 'choices' === $key ) {
+		if ( 'choices' === $key || 'conditions' === $key ) {
 			$return = array();
 			foreach ( $options as $name => $data ) {
-				if ( isset( $data['choices'] ) ) {
-					$return[ $name ] = $data['choices'];
+				if ( isset( $data[ $key ] ) ) {
+					$return[ $name ] = $data[ $key ];
 				}
 			}
 			return $return;
