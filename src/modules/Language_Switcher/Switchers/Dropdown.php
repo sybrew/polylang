@@ -65,10 +65,9 @@ class Dropdown extends Nav {
 			return $out;
 		}
 
-		$tag = $this->supports_html5() ? 'nav' : 'div';
 		$out = sprintf(
 			'<%1$s class="%2$s" aria-label="%3$s">%4$s</%1$s>',
-			$tag,
+			$this->supports_html5() ? 'nav' : 'div',
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
 			esc_attr( __( 'Choose a language', 'polylang' ) ),
 			$out
