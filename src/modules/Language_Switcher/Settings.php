@@ -210,15 +210,10 @@ class Settings {
 	 *
 	 * @since 3.9
 	 *
-	 * @param string $key Optional. Either `label` to return option labels, `default` to return default values,
-	 *                    `choices` to return choices, `conditions` to return conditions, or an empty string to return
-	 *                    everything. Defaults to an empty string.
-	 * @return array List of switcher options strings, default values, options, or everything.
-	 *
-	 * @phpstan-param ''|'label'|'default'|'choices'|'conditions' $key
+	 * @return array[]
 	 */
-	public static function get_options( string $key = '' ): array {
-		$options = array(
+	public static function get_options(): array {
+		return array(
 			'layout'                 => array(
 				'label'   => __( 'Layout:', 'polylang' ),
 				'default' => 'horizontal',
@@ -289,21 +284,5 @@ class Settings {
 				),
 			),
 		);
-
-		if ( '' === $key ) {
-			return $options;
-		}
-
-		if ( 'choices' === $key || 'conditions' === $key ) {
-			$return = array();
-			foreach ( $options as $name => $data ) {
-				if ( isset( $data[ $key ] ) ) {
-					$return[ $name ] = $data[ $key ];
-				}
-			}
-			return $return;
-		}
-
-		return wp_list_pluck( $options, $key );
 	}
 }

@@ -120,7 +120,7 @@ class Languages extends WP_Widget {
 	public function update( $new_instance, $old_instance ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$instance = array_merge(
 			array( 'title' => '' ),
-			Settings::get_options( 'default' )
+			wp_list_pluck( Settings::get_options(), 'default' )
 		);
 
 		if ( ! empty( $new_instance['title'] ) ) {
