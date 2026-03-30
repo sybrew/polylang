@@ -179,7 +179,6 @@ class PLL_Uninstall {
 		// Delete options.
 		delete_option( 'polylang' );
 		delete_option( 'widget_polylang' ); // Automatically created by WP.
-		delete_option( 'widget_advanced_polylang' ); // Automatically created by WP.
 		delete_option( 'polylang_wpml_strings' ); // Strings registered with icl_register_string.
 		delete_option( 'polylang_licenses' );
 		delete_option( 'pll_dismissed_notices' );
