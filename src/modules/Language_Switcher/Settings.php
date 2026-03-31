@@ -33,6 +33,16 @@ defined( 'ABSPATH' ) || exit;
  *     current_language_code?: string,
  *     unique_id?: string
  * }
+ * @phpstan-type ConvertedSettings array{
+ *     layout: 'horizontal'|'vertical'|'dropdown'|'select',
+ *     alignment?: 'left'|'center'|'right'|'stretched',
+ *     show_flags: bool,
+ *     flag_aspect_ratio: '32'|'11',
+ *     show_labels: ''|'names'|'codes',
+ *     hide_if_no_translation: bool,
+ *     hide_current: bool,
+ *     force_home: bool
+ * }
  */
 class Settings {
 	/**
@@ -284,5 +294,49 @@ class Settings {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Converts the old structure to the new one.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array  $options The settings.
+	 * @param string $context Optional. The context. This changes which options are returned. Possible values are
+	 *                        `all` (for a widget or a block) and `menu` (for a menu or a "block for menu"). Default
+	 *                        is `all`.
+	 * @return array[]
+	 *
+	 * @phpstan-return ConvertedSettings
+	 */
+	public static function maybe_convert_legacy_options( array $options, string $context = 'all' ): array {
+		$options_data = self::get_options( $context );
+		$defaults     = wp_list_pluck( $options_data, 'default' );
+		/** @phpstan-var ConvertedSettings $options */
+		$options = array_merge( $defaults, $options );
+
+		if ( ! isset( $options['dropdown'] ) ) {
+			return $options;
+		}
+
+		if ( ! empty( $options['dropdown'] ) ) {
+			$options['layout'] = isset( $options_data['layout']['choices']['select'] ) ? 'select' : 'dropdown';
+		} else {
+			$options['layout'] = isset( $options_data['layout']['choices']['vertical'] ) ? 'vertical' : 'horizontal';
+		}
+
+		if ( isset( $options_data['alignment'] ) ) {
+			$options['alignment'] = $options_data['alignment']['default'];
+		}
+
+		$options['show_labels']            = ! empty( $options['show_names'] ) ? 'names' : '';
+		$options['show_flags']             = ! empty( $options['show_flags'] );
+		$options['hide_if_no_translation'] = ! empty( $options['hide_if_no_translation'] );
+		$options['hide_current']           = ! empty( $options['hide_current'] );
+		$options['force_home']             = ! empty( $options['force_home'] );
+
+		unset( $options['dropdown'], $options['show_names'] );
+
+		return $options;
 	}
 }

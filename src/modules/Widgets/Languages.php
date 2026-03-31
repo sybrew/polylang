@@ -84,7 +84,7 @@ class Languages extends WP_Widget {
 			return;
 		}
 
-		$instance = $this->maybe_convert_legacy_instance( $instance );
+		$instance = Settings::maybe_convert_legacy_options( $instance );
 		$list     = PLL()->switcher->get( $instance, PLL()->links );
 
 		if ( empty( $list ) ) {
@@ -163,7 +163,7 @@ class Languages extends WP_Widget {
 	public function form( $instance ): void {
 		$labels_and_data = Settings::get_options();
 		$instance        = wp_parse_args(
-			$this->maybe_convert_legacy_instance( (array) $instance ),
+			Settings::maybe_convert_legacy_options( (array) $instance ),
 			array_merge( array( 'title' => '' ), wp_list_pluck( $labels_and_data, 'default' ) )
 		);
 
@@ -291,35 +291,5 @@ class Languages extends WP_Widget {
 			'<tr class="%s">',
 			esc_attr( implode( ' ', $classes ) )
 		);
-	}
-
-	/**
-	 * Converts the old instance format to the new one.
-	 *
-	 * @since 3.9
-	 *
-	 * @param array $instance The settings for the particular instance of the widget.
-	 * @return array
-	 *
-	 * @phpstan-param NewInstance|OldInstance $instance
-	 * @phpstan-return NewInstance
-	 */
-	private function maybe_convert_legacy_instance( array $instance ): array {
-		if ( ! isset( $instance['dropdown'] ) ) {
-			return $instance;
-		}
-
-		$instance['layout']                 = ! empty( $instance['dropdown'] ) ? 'select' : 'vertical';
-		$instance['alignment']              = is_rtl() ? 'right' : 'left';
-		$instance['flag_aspect_ratio']      = '32';
-		$instance['show_labels']            = ! empty( $instance['show_names'] ) ? 'names' : '';
-		$instance['show_flags']             = ! empty( $instance['show_flags'] );
-		$instance['hide_if_no_translation'] = ! empty( $instance['hide_if_no_translation'] );
-		$instance['hide_current']           = ! empty( $instance['hide_current'] );
-		$instance['force_home']             = ! empty( $instance['force_home'] );
-
-		unset( $instance['dropdown'], $instance['show_names'] );
-
-		return $instance;
 	}
 }
