@@ -31,7 +31,7 @@ class Nav extends Abstract_Switcher {
 		}
 
 		if ( ! $this->settings->show_wrapper || empty( $out ) ) {
-			return $this->filter_output( $out );
+			return $out;
 		}
 
 		$out = sprintf(
@@ -43,7 +43,7 @@ class Nav extends Abstract_Switcher {
 			"\n{$out}"
 		);
 
-		return $this->filter_output( "\n{$out}\n" );
+		return "\n{$out}\n";
 	}
 
 	/**

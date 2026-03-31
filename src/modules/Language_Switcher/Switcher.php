@@ -143,9 +143,19 @@ class Switcher {
 			return '';
 		}
 
-		return $switcher->get(
+		$html = $switcher->get(
 			$this->get_languages( $settings, $links )
 		);
+
+		/**
+		 * Filter the whole switcher markup.
+		 *
+		 * @since 3.9.0
+		 *
+		 * @param string   $html     Switcher markup.
+		 * @param Settings $settings Switcher settings.
+		 */
+		return (string) apply_filters( 'pll_language_switcher', $html, $settings );
 	}
 
 	/**

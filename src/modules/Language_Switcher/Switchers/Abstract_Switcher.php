@@ -101,25 +101,4 @@ abstract class Abstract_Switcher {
 
 		return 'html5' === $format;
 	}
-
-	/**
-	 * Filters the whole switcher markup.
-	 * Must be called when returning the output of `Abstract_Switcher::get()`.
-	 *
-	 * @since 3.9.0
-	 *
-	 * @param string $html Switcher markup.
-	 * @return string
-	 */
-	protected function filter_output( string $html ): string {
-		/**
-		 * Filter the whole switcher markup.
-		 *
-		 * @since 3.9.0
-		 *
-		 * @param string   $html     Switcher markup.
-		 * @param Settings $settings Switcher settings.
-		 */
-		return (string) apply_filters( 'pll_language_switcher', $html, $this->settings );
-	}
 }

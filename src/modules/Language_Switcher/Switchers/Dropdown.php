@@ -51,7 +51,7 @@ class Dropdown extends Nav {
 		$out = implode( $elements );
 
 		if ( ! $this->settings->show_wrapper || empty( $out ) || empty( $current ) ) {
-			return $this->filter_output( $out );
+			return $out;
 		}
 
 		$out = sprintf(
@@ -65,7 +65,7 @@ class Dropdown extends Nav {
 			"\n{$out}"
 		);
 
-		return $this->filter_output( "\n{$out}\n" );
+		return "\n{$out}\n";
 	}
 
 	/**
