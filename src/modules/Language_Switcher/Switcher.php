@@ -117,6 +117,8 @@ class Switcher {
 	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return void
+	 *
+	 * @phpstan-param OptionalSettings $settings
 	 */
 	public function print( array $settings, PLL_Links $links ): void {
 		echo $this->get( $settings, $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -130,6 +132,8 @@ class Switcher {
 	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return string
+	 *
+	 * @phpstan-param OptionalSettings $settings
 	 */
 	public function get( array $settings, PLL_Links $links ): string {
 		$settings = new Settings( $settings, $links );
@@ -152,6 +156,8 @@ class Switcher {
 	 * @param array     $settings Settings.
 	 * @param PLL_Links $links    Instance of `PLL_Links`.
 	 * @return Element[]
+	 *
+	 * @phpstan-param OptionalSettings $settings
 	 */
 	public function get_elements( array $settings, PLL_Links $links ): array {
 		$settings = new Settings( $settings, $links );
