@@ -310,7 +310,7 @@ class Settings {
 	 * @phpstan-return ConvertedSettings
 	 */
 	public static function maybe_convert_legacy_options( array $options, string $context = 'all' ): array {
-		$options_data = self::get_options( $context );
+		$options_data = self::get_options();
 		$defaults     = wp_list_pluck( $options_data, 'default' );
 		/** @phpstan-var ConvertedSettings $options */
 		$options = array_merge( $defaults, $options );
