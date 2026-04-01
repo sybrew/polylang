@@ -184,6 +184,42 @@ class Test_Term extends TestCase {
 	}
 
 	/**
+	 * @testWith ["fr"]
+	 *           ["de"]
+	 *
+	 * @param string $lang The language code.
+	 */
+	public function test_returns_lang_from_pll_post_id_during_ajax_post_editing( string $lang ) {
+		$post_id = self::factory()->post->create();
+		$this->pll_model->post->set_language( $post_id, $lang );
+
+		$_POST['pll_post_id'] = $post_id;
+
+		$term   = $this->create_term_capa_object( null, self::$english );
+		$result = $term->get_language();
+
+		$this->assertSame( $lang, $result->slug );
+	}
+
+	/**
+	 * @testWith ["fr"]
+	 *           ["de"]
+	 *
+	 * @param string $lang The language code.
+	 */
+	public function test_returns_lang_from_pll_term_id_during_ajax_term_editing( string $lang ) {
+		$term_id = self::factory()->term->create( array( 'taxonomy' => 'category' ) );
+		$this->pll_model->term->set_language( $term_id, $lang );
+
+		$_POST['pll_term_id'] = $term_id;
+
+		$term   = $this->create_term_capa_object( null, self::$english );
+		$result = $term->get_language();
+
+		$this->assertSame( $lang, $result->slug );
+	}
+
+	/**
 	 * Creates a Term object for testing.
 	 *
 	 * @param Request|null       $request   The request mock or null. Default will create a mock with `Request::get_language` method returning null.
