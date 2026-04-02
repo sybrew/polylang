@@ -260,33 +260,33 @@ class Settings {
 				),
 			),
 			'show_flags'             => array(
-				'label'      => 'Display flags',
-				'default'    => $defaults['show_flags'],
-				'conditions' => array(
+				'label'   => 'Display flags',
+				'default' => $defaults['show_flags'],
+				'hide_if' => array(
 					'layout' => 'select',
 				),
 			),
 			'flag_aspect_ratio'      => array(
-				'label'      => 'Flags aspect ratio:',
-				'default'    => $defaults['flag_aspect_ratio'],
-				'choices'    => array(
+				'label'   => 'Flags aspect ratio:',
+				'default' => $defaults['flag_aspect_ratio'],
+				'choices' => array(
 					'32' => '3:2',
 					'11' => '1:1',
 				),
-				'conditions' => array(
+				'hide_if' => array(
 					'layout'     => 'select',
 					'show_flags' => false,
 				),
 			),
 			'show_labels'            => array(
-				'label'      => 'Display labels:',
-				'default'    => $defaults['show_labels'],
-				'choices'    => array(
+				'label'   => 'Display labels:',
+				'default' => $defaults['show_labels'],
+				'choices' => array(
 					''      => 'No',
 					'names' => 'Language names',
 					'codes' => 'Language codes',
 				),
-				'conditions' => array(
+				'hide_if' => array(
 					'layout' => 'select',
 				),
 			),
@@ -295,16 +295,16 @@ class Settings {
 				'default' => $defaults['force_home'],
 			),
 			'hide_current'           => array(
-				'label'      => 'Hide the current language',
-				'default'    => $defaults['hide_current'],
-				'conditions' => array(
+				'label'   => 'Hide the current language',
+				'default' => $defaults['hide_current'],
+				'hide_if' => array(
 					'layout' => 'select',
 				),
 			),
 			'hide_if_no_translation' => array(
-				'label'      => 'Hide languages with no translation',
-				'default'    => $defaults['hide_if_no_translation'],
-				'conditions' => array(
+				'label'   => 'Hide languages with no translation',
+				'default' => $defaults['hide_if_no_translation'],
+				'hide_if' => array(
 					'force_home' => true,
 				),
 			),

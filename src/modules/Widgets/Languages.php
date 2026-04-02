@@ -252,14 +252,14 @@ class Languages extends WP_Widget {
 	 * @return void
 	 */
 	private function print_wrapper_start( array $label_and_data, array $values ): void {
-		if ( empty( $label_and_data['conditions'] ) ) {
+		if ( empty( $label_and_data['hide_if'] ) ) {
 			echo '<tr>';
 			return;
 		}
 
 		$classes = array();
 
-		foreach ( $label_and_data['conditions'] as $key => $value ) {
+		foreach ( $label_and_data['hide_if'] as $key => $value ) {
 			if ( $values[ $key ] === $value ) {
 				$classes[] = "pll-hidden-by-{$key}";
 			}
