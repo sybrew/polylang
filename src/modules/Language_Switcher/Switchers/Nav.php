@@ -76,7 +76,7 @@ class Nav extends Abstract_Switcher {
 			'<li class="%s"><a %s>%s</a></li>',
 			esc_attr( implode( ' ', $element->item_classes ) ),
 			$link_atts,
-			$this->get_item_label( $element )
+			static::get_item_label( $element )
 		);
 
 		return "\t{$out}\n";
@@ -90,10 +90,10 @@ class Nav extends Abstract_Switcher {
 	 * @param Element $element An element.
 	 * @return string
 	 */
-	protected function get_item_label( Element $element ): string {
+	public static function get_item_label( Element $element ): string {
 		if ( ! empty( $element->flag ) && ! empty( $element->label ) ) {
 			return sprintf(
-				'<span>%s</span><span>%s</span>',
+				'<span class="pll-switcher-flag">%s</span><span>%s</span>',
 				(string) preg_replace( '/ style="[^"]*"/', '', $element->flag ),
 				esc_html( $element->label )
 			);

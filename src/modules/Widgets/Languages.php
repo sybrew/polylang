@@ -120,31 +120,11 @@ class Languages extends WP_Widget {
 	public function update( $new_instance, $old_instance ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		$instance = array_merge(
 			array( 'title' => '' ),
-			wp_list_pluck( Settings::get_options(), 'default' )
+			Settings::validate_before_save( $new_instance )
 		);
 
 		if ( ! empty( $new_instance['title'] ) ) {
 			$instance['title'] = sanitize_text_field( $new_instance['title'] );
-		}
-
-		if ( isset( $new_instance['layout'] ) && in_array( $new_instance['layout'], array( 'select', 'dropdown', 'horizontal', 'vertical' ), true ) ) {
-			$instance['layout'] = $new_instance['layout'];
-		}
-
-		if ( isset( $new_instance['alignment'] ) && in_array( $new_instance['alignment'], array( 'left', 'center', 'right', 'stretched' ), true ) ) {
-			$instance['alignment'] = $new_instance['alignment'];
-		}
-
-		if ( isset( $new_instance['flag_aspect_ratio'] ) && in_array( $new_instance['flag_aspect_ratio'], array( '32', '11' ), true ) ) {
-			$instance['flag_aspect_ratio'] = $new_instance['flag_aspect_ratio'];
-		}
-
-		if ( isset( $new_instance['show_labels'] ) && in_array( $new_instance['show_labels'], array( '', 'names', 'codes' ), true ) ) {
-			$instance['show_labels'] = $new_instance['show_labels'];
-		}
-
-		foreach ( array( 'show_flags', 'force_home', 'hide_current', 'hide_if_no_translation' ) as $key ) {
-			$instance[ $key ] = ! empty( $new_instance[ $key ] );
 		}
 
 		return $instance;
@@ -161,7 +141,7 @@ class Languages extends WP_Widget {
 	 * @phpstan-param NewInstance|OldInstance $instance
 	 */
 	public function form( $instance ): void {
-		$labels_and_data = Settings::get_options();
+		$labels_and_data = Settings::get_options( true );
 		$instance        = wp_parse_args(
 			Settings::maybe_convert_legacy_options( (array) $instance ),
 			array_merge( array( 'title' => '' ), wp_list_pluck( $labels_and_data, 'default' ) )

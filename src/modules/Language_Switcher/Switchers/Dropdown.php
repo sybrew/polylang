@@ -81,7 +81,7 @@ class Dropdown extends Nav {
 			'<a lang="%1$s" hreflang="%1$s" href="%2$s" class="current-lang" aria-current="true">%3$s</a>',
 			esc_attr( $element->locale ),
 			esc_url( $element->url ),
-			$this->get_item_label( $element )
+			static::get_item_label( $element )
 		);
 	}
 

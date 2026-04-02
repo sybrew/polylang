@@ -386,7 +386,7 @@ td.column-default_lang .icon-default-lang:before,
 .advanced_polylang-widget-content td {
 	padding: 0 0 10px 0;
 }
-.advanced_polylang-widget-content [class*="pll-hidden-by-"] {
+[class*="pll-hidden-by-"] {
 	display: none;
 }
 

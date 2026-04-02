@@ -140,26 +140,26 @@
 .pll-alignment-right a {
 	text-align: right;
 }
-.pll-switcher a span {
+.pll-switcher-flag,
+.pll-switcher-flag + span {
 	display: inline-block;
 	vertical-align: middle;
 }
-.pll-switcher a span + span {
+.pll-switcher-flag + span {
 	margin-inline-start: .3em;
 	writing-mode: horizontal-tb;
 }
 
 /* Flags */
-.pll-switcher a img {
+.pll-switcher-flag img {
+	width: 18px;
 	vertical-align: middle;
 	object-fit: cover;
 	object-position: center;
 }
-.pll-switcher.pll-aspect-ratio-11 a img {
-	width: 18px;
+.pll-aspect-ratio-11 .pll-switcher-flag img {
 	height: 18px;
 }
-.pll-switcher.pll-aspect-ratio-32 a img {
-	width: 18px;
+.pll-aspect-ratio-32 .pll-switcher-flag img {
 	height: 12px;
 }

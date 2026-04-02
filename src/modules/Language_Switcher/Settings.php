@@ -33,15 +33,34 @@ defined( 'ABSPATH' ) || exit;
  *     current_language_code?: string,
  *     unique_id?: string
  * }
+ * @phpstan-type AllSettings array{
+ *     layout: 'horizontal'|'vertical'|'dropdown'|'select',
+ *     alignment: 'left'|'center'|'right'|'stretched',
+ *     show_wrapper: bool,
+ *     show_flags: bool,
+ *     flag_aspect_ratio: '32'|'11',
+ *     show_labels: ''|'names'|'codes',
+ *     hide_if_empty: bool,
+ *     hide_if_no_translation: bool,
+ *     hide_current: bool,
+ *     force_home: bool,
+ *     post_id: int,
+ *     wrapper_classes: non-empty-string[],
+ *     item_classes: non-empty-string[],
+ *     link_classes: non-empty-string[],
+ *     current_language_code: string,
+ *     unique_id: string
+ * }
  * @phpstan-type ConvertedSettings array{
  *     layout: 'horizontal'|'vertical'|'dropdown'|'select',
- *     alignment?: 'left'|'center'|'right'|'stretched',
+ *     alignment: 'left'|'center'|'right'|'stretched',
  *     show_flags: bool,
  *     flag_aspect_ratio: '32'|'11',
  *     show_labels: ''|'names'|'codes',
  *     hide_if_no_translation: bool,
  *     hide_current: bool,
- *     force_home: bool
+ *     force_home: bool,
+ *     ...
  * }
  */
 class Settings {
@@ -53,11 +72,13 @@ class Settings {
 	public string $layout = 'horizontal';
 
 	/**
+	 * No default value here because it depends on `is_rtl()`. see `self::get_defaults()`.
+	 *
 	 * @var string
 	 *
 	 * @phpstan-var 'left'|'center'|'right'|'stretched'
 	 */
-	public string $alignment = 'center';
+	public string $alignment;
 
 	/**
 	 * @var bool
@@ -186,25 +207,17 @@ class Settings {
 		 *
 		 * @param array $settings Settings.
 		 */
-		$settings   = apply_filters( 'pll_language_switcher_settings', $settings );
-		$properties = array_diff_key( get_class_vars( self::class ), array( 'increment' => 0 ) );
+		$settings = apply_filters( 'pll_language_switcher_settings', $settings );
+		$defaults = self::get_defaults();
+		$settings = array_merge( $defaults, $settings );
 
-		foreach ( array_intersect_key( $settings, $properties ) as $name => $value ) {
+		foreach ( array_intersect_key( $settings, $defaults ) as $name => $value ) {
 			$this->$name = $value;
 		}
 
-		if ( 'select' === $this->layout ) {
-			$this->show_flags   = false;
-			$this->show_labels  = 'names';
-			$this->hide_current = false;
-		}
+		self::validate_interactions( $this );
 
-		if ( ! $this->show_flags && empty( $this->show_labels ) ) {
-			// Make sure something is displayed.
-			$this->show_labels = 'names';
-		}
-
-		if ( $links instanceof PLL_Admin_Links || $this->force_home ) {
+		if ( $links instanceof PLL_Admin_Links ) {
 			// Force not to hide the language for the widget preview even if the option is checked.
 			$this->hide_if_no_translation = false;
 		}
@@ -220,40 +233,42 @@ class Settings {
 	 *
 	 * @since 3.9
 	 *
+	 * @param bool $translate Optional. Tells if the labels must be translated. Default id `false`.
 	 * @return array[]
 	 */
-	public static function get_options(): array {
-		return array(
+	public static function get_options( bool $translate = false ): array {
+		$defaults = self::get_defaults();
+		$data     = array(
 			'layout'                 => array(
-				'label'   => __( 'Layout:', 'polylang' ),
-				'default' => 'horizontal',
+				'label'   => 'Layout:',
+				'default' => $defaults['layout'],
 				'choices' => array(
-					'horizontal' => __( 'Horizontal', 'polylang' ),
-					'vertical'   => __( 'Vertical', 'polylang' ),
-					'dropdown'   => __( 'Dropdown', 'polylang' ),
-					'select'     => __( 'Selector', 'polylang' ),
+					'horizontal' => 'Horizontal',
+					'vertical'   => 'Vertical',
+					'dropdown'   => 'Dropdown',
+					'select'     => 'Selector',
 				),
 			),
 			'alignment'              => array(
-				'label'   => __( 'Alignment:', 'polylang' ),
-				'default' => is_rtl() ? 'right' : 'left',
+				'label'   => 'Alignment:',
+				'default' => $defaults['alignment'],
 				'choices' => array(
-					'left'      => _x( 'Left', 'alignment', 'polylang' ),
-					'center'    => _x( 'Center', 'alignment', 'polylang' ),
-					'right'     => _x( 'Right', 'alignment', 'polylang' ),
-					'stretched' => _x( 'Stretched', 'alignment', 'polylang' ),
+					'left'      => 'Left',
+					'center'    => 'Center',
+					'right'     => 'Right',
+					'stretched' => 'Stretched',
 				),
 			),
 			'show_flags'             => array(
-				'label'      => __( 'Display flags', 'polylang' ),
-				'default'    => false,
+				'label'      => 'Display flags',
+				'default'    => $defaults['show_flags'],
 				'conditions' => array(
 					'layout' => 'select',
 				),
 			),
 			'flag_aspect_ratio'      => array(
-				'label'      => __( 'Flags aspect ratio:', 'polylang' ),
-				'default'    => '32',
+				'label'      => 'Flags aspect ratio:',
+				'default'    => $defaults['flag_aspect_ratio'],
 				'choices'    => array(
 					'32' => '3:2',
 					'11' => '1:1',
@@ -264,79 +279,234 @@ class Settings {
 				),
 			),
 			'show_labels'            => array(
-				'label'      => __( 'Display labels:', 'polylang' ),
-				'default'    => 'names',
+				'label'      => 'Display labels:',
+				'default'    => $defaults['show_labels'],
 				'choices'    => array(
-					''      => __( 'No', 'polylang' ),
-					'names' => __( 'Language names', 'polylang' ),
-					'codes' => __( 'Language codes', 'polylang' ),
+					''      => 'No',
+					'names' => 'Language names',
+					'codes' => 'Language codes',
 				),
 				'conditions' => array(
 					'layout' => 'select',
 				),
 			),
 			'force_home'             => array(
-				'label'   => __( 'Force link to front page', 'polylang' ),
-				'default' => false,
+				'label'   => 'Force link to front page',
+				'default' => $defaults['force_home'],
 			),
 			'hide_current'           => array(
-				'label'      => __( 'Hide the current language', 'polylang' ),
-				'default'    => false,
+				'label'      => 'Hide the current language',
+				'default'    => $defaults['hide_current'],
 				'conditions' => array(
 					'layout' => 'select',
 				),
 			),
 			'hide_if_no_translation' => array(
-				'label'      => __( 'Hide languages with no translation', 'polylang' ),
-				'default'    => false,
+				'label'      => 'Hide languages with no translation',
+				'default'    => $defaults['hide_if_no_translation'],
 				'conditions' => array(
 					'force_home' => true,
 				),
 			),
 		);
+
+		if ( $translate ) {
+			foreach ( self::get_labels() as $option_name => $option_data ) {
+				if ( ! isset( $data[ $option_name ] ) ) {
+					continue;
+				}
+				$data[ $option_name ]['label'] = $option_data['label'];
+				if ( ! isset( $option_data['choices'], $data[ $option_name ]['choices'] ) ) {
+					continue;
+				}
+				foreach ( $data[ $option_name ]['choices'] as $choice_key => $choice_val ) {
+					$data[ $option_name ]['choices'][ $choice_key ] = $option_data['choices'][ $choice_key ];
+				}
+			}
+		}
+
+		return $data;
 	}
 
 	/**
-	 * Converts the old structure to the new one.
+	 * Converts the old structure to the new one. Should be used when retrieving data from the database.
+	 * Returns all the keys except `dropdown` and `show_names`.
 	 *
 	 * @since 3.9
 	 *
-	 * @param array  $options The settings.
-	 * @param string $context Optional. The context. This changes which options are returned. Possible values are
-	 *                        `all` (for a widget or a block) and `menu` (for a menu or a "block for menu"). Default
-	 *                        is `all`.
+	 * @param array $options The settings.
 	 * @return array[]
 	 *
 	 * @phpstan-return ConvertedSettings
 	 */
-	public static function maybe_convert_legacy_options( array $options, string $context = 'all' ): array {
+	public static function maybe_convert_legacy_options( array $options ): array {
 		$options_data = self::get_options();
 		$defaults     = wp_list_pluck( $options_data, 'default' );
-		/** @phpstan-var ConvertedSettings $options */
-		$options = array_merge( $defaults, $options );
+		$is_legacy    = ! isset( $options['layout'] );
+		$options      = array_merge( $defaults, $options );
 
-		if ( ! isset( $options['dropdown'] ) ) {
-			return $options;
+		if ( $is_legacy ) {
+			if ( ! empty( $options['dropdown'] ) ) {
+				$options['layout'] = isset( $options_data['layout']['choices']['select'] ) ? 'select' : 'dropdown';
+			} else {
+				$options['layout'] = isset( $options_data['layout']['choices']['vertical'] ) ? 'vertical' : 'horizontal';
+			}
+
+			if ( isset( $options_data['alignment'] ) ) {
+				$options['alignment'] = $options_data['alignment']['default'];
+			}
+
+			$options['show_labels']            = ! empty( $options['show_names'] ) ? 'names' : '';
+			$options['show_flags']             = ! empty( $options['show_flags'] );
+			$options['hide_if_no_translation'] = ! empty( $options['hide_if_no_translation'] );
+			$options['hide_current']           = ! empty( $options['hide_current'] );
+			$options['force_home']             = ! empty( $options['force_home'] );
 		}
-
-		if ( ! empty( $options['dropdown'] ) ) {
-			$options['layout'] = isset( $options_data['layout']['choices']['select'] ) ? 'select' : 'dropdown';
-		} else {
-			$options['layout'] = isset( $options_data['layout']['choices']['vertical'] ) ? 'vertical' : 'horizontal';
-		}
-
-		if ( isset( $options_data['alignment'] ) ) {
-			$options['alignment'] = $options_data['alignment']['default'];
-		}
-
-		$options['show_labels']            = ! empty( $options['show_names'] ) ? 'names' : '';
-		$options['show_flags']             = ! empty( $options['show_flags'] );
-		$options['hide_if_no_translation'] = ! empty( $options['hide_if_no_translation'] );
-		$options['hide_current']           = ! empty( $options['hide_current'] );
-		$options['force_home']             = ! empty( $options['force_home'] );
 
 		unset( $options['dropdown'], $options['show_names'] );
 
-		return $options;
+		/** @phpstan-var ConvertedSettings */
+		return self::validate_interactions( $options );
+	}
+
+	/**
+	 * Validates the given settings for storage in database.
+	 * Returns only the keys that can be stored.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $settings Switcher settings.
+	 * @return array
+	 */
+	public static function validate_before_save( array $settings ): array {
+		$validated = array();
+
+		foreach ( self::get_options() as $name => $data ) {
+			if ( ! isset( $settings[ $name ] ) ) {
+				$validated[ $name ] = $data['default'];
+				continue;
+			}
+			$value = $settings[ $name ];
+
+			if ( ! empty( $data['choices'] ) ) {
+				$validated[ $name ] = isset( $data['choices'][ $value ] ) ? $value : $data['default'];
+				continue;
+			}
+			$validated[ $name ] = ! empty( $value );
+		}
+
+		$validated = self::validate_interactions( $validated );
+
+		// Keep the legacy keys in database for backward compatibility.
+		$validated['dropdown']   = 'select' === $validated['layout'] ? 1 : 0;
+		$validated['show_names'] = ! empty( $validated['show_labels'] ) ? 1 : 0;
+
+		return $validated;
+	}
+
+	/**
+	 * Returns the public default values.
+	 *
+	 * @since 3.9
+	 *
+	 * @return array
+	 *
+	 * @phpstan-return AllSettings
+	 */
+	public static function get_defaults(): array {
+		$properties = array_diff_key( get_class_vars( self::class ), array( 'increment' => 0 ) );
+
+		$properties['alignment'] = is_rtl() ? 'right' : 'left';
+		/** @phpstan-var AllSettings $properties */
+		return $properties;
+	}
+
+	/**
+	 * Validates the interactions between settings.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array|self $settings Switcher settings.
+	 * @return array|self
+	 *
+	 * @phpstan-return ($settings is array ? array : self)
+	 */
+	private static function validate_interactions( $settings ) {
+		$is_array = is_array( $settings );
+
+		if ( $is_array ) {
+			$settings = (object) $settings;
+		}
+
+		if ( 'select' === $settings->layout ) {
+			$settings->show_flags   = false;
+			$settings->show_labels  = 'names';
+			$settings->hide_current = false;
+		}
+
+		// Make sure something is displayed.
+		if ( ! $settings->show_flags && empty( $settings->show_labels ) ) {
+			$settings->show_labels = 'names';
+		}
+
+		// When linking to home pages, we don't hide items with no translations.
+		if ( $settings->force_home ) {
+			$settings->hide_if_no_translation = false;
+		}
+
+		return $is_array ? (array) $settings : $settings;
+	}
+
+	/**
+	 * Returns the translated labels.
+	 *
+	 * @since 3.9
+	 *
+	 * @return array[]
+	 */
+	private static function get_labels(): array {
+		return array(
+			'layout'                 => array(
+				'label'   => __( 'Layout:', 'polylang' ),
+				'choices' => array(
+					'horizontal' => __( 'Horizontal', 'polylang' ),
+					'vertical'   => __( 'Vertical', 'polylang' ),
+					'dropdown'   => __( 'Dropdown', 'polylang' ),
+					'select'     => __( 'Selector', 'polylang' ),
+				),
+			),
+			'alignment'              => array(
+				'label'   => __( 'Alignment:', 'polylang' ),
+				'choices' => array(
+					'left'      => _x( 'Left', 'alignment', 'polylang' ),
+					'center'    => _x( 'Center', 'alignment', 'polylang' ),
+					'right'     => _x( 'Right', 'alignment', 'polylang' ),
+					'stretched' => _x( 'Stretched', 'alignment', 'polylang' ),
+				),
+			),
+			'show_flags'             => array(
+				'label' => __( 'Display flags', 'polylang' ),
+			),
+			'flag_aspect_ratio'      => array(
+				'label' => __( 'Flags aspect ratio:', 'polylang' ),
+			),
+			'show_labels'            => array(
+				'label'      => __( 'Display labels:', 'polylang' ),
+				'choices'    => array(
+					''      => __( 'No', 'polylang' ),
+					'names' => __( 'Language names', 'polylang' ),
+					'codes' => __( 'Language codes', 'polylang' ),
+				),
+			),
+			'force_home'             => array(
+				'label' => __( 'Force link to front page', 'polylang' ),
+			),
+			'hide_current'           => array(
+				'label' => __( 'Hide the current language', 'polylang' ),
+			),
+			'hide_if_no_translation' => array(
+				'label' => __( 'Hide languages with no translation', 'polylang' ),
+			),
+		);
 	}
 }
