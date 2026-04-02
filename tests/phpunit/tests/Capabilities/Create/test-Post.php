@@ -158,10 +158,7 @@ class Test_Post extends TestCase {
 	 * @param string $lang The language code.
 	 */
 	public function test_returns_lang_from_pll_post_id_during_ajax_post_editing( string $lang ) {
-		$post_id = self::factory()->post->create();
-		$this->pll_model->post->set_language( $post_id, $lang );
-
-		$_POST['pll_post_id'] = $post_id;
+		$_POST['pll_post_id'] = self::factory()->post->create( array( 'lang' => $lang ) );
 
 		$post   = $this->create_post_capa_object( null, self::$english );
 		$result = $post->get_language();
