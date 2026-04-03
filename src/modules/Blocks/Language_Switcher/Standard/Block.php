@@ -64,7 +64,7 @@ class Block extends Abstract_Block {
 			$outer_wrapper_tag = sprintf( '<div class="%s pll-layout-select">%s</div>', $outer_wrapper_classes, '<div %1$s>%2$s</div>' );
 			$switcher_output   = sprintf( '<label class="screen-reader-text" for="lang_choice_%s">%s</label>', (int) $attributes['dropdown'], esc_html( $aria_label ) ) . $switcher_output;
 		} else {
-			$outer_wrapper_tag = sprintf( '<nav role="navigation" class="%s pll-layout-vertical" aria-label="%s">%s</nav>', $outer_wrapper_classes, esc_attr( $aria_label ), '<ul %1$s>%2$s</ul>' );
+			$outer_wrapper_tag = sprintf( '<nav role="navigation" aria-label="%s" class="%s pll-layout-vertical">%s</nav>', esc_attr( $aria_label ), $outer_wrapper_classes, '<ul %1$s>%2$s</ul>' );
 		}
 
 		return sprintf( $outer_wrapper_tag, get_block_wrapper_attributes(), $switcher_output );
