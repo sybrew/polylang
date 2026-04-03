@@ -129,7 +129,7 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 		$menu_container_query = '//div[@class="menu-menu_test-container"]';
 		$menu_list_query = '//ul[@id="menu-menu_test"]';
 		$this->assertSame( 1, $xpath->query( $widget_query )->length, 'The widget container is not rendered.' );
-		$this->assertSame( 1, $xpath->query( $menu_container_query )->length, 'The navigation menu container is not rendered.' ); ////
+		$this->assertSame( 1, $xpath->query( $menu_container_query )->length, 'The navigation menu container is not rendered.' );
 		$this->assertSame( 1, $xpath->query( $menu_list_query )->length, 'The navigation menu list is not rendered.' );
 
 		$en_query = '//a[@lang="en-US"]';
