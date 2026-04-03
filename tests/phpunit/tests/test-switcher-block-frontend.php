@@ -1,5 +1,6 @@
 <?php
 
+use WP_Syntex\Polylang\Language_Switcher\Switcher;
 use WP_Syntex\Polylang\Blocks\Language_Switcher\Standard;
 use WP_Syntex\Polylang\Blocks\Language_Switcher\Navigation;
 
@@ -15,6 +16,8 @@ class Switcher_Block_Frontend_Test extends PLL_UnitTestCase {
 
 		self::create_language( 'en_US' );
 		self::create_language( 'fr_FR' );
+
+		self::require_api();
 	}
 
 	public function set_up() {
@@ -25,9 +28,10 @@ class Switcher_Block_Frontend_Test extends PLL_UnitTestCase {
 				'default_lang' => 'en',
 			)
 		);
-		$model = new PLL_Model( $options );
-		$links_model = new PLL_Links_Default( $model );
-		$polylang = new PLL_Frontend( $links_model );
+		$model               = new PLL_Model( $options );
+		$links_model         = new PLL_Links_Default( $model );
+		$polylang            = new PLL_Frontend( $links_model );
+		$GLOBALS['polylang'] = $polylang;
 
 		// Mock the links to always return the same values
 		$polylang->links = $this->getMockBuilder( PLL_Frontend_Links::class )
@@ -43,6 +47,7 @@ class Switcher_Block_Frontend_Test extends PLL_UnitTestCase {
 				}
 			);
 
+		$polylang->switcher     = ( new Switcher( $polylang->model ) )->init();
 		$this->switcher_block   = ( new Standard\Block( $polylang ) )->init();
 		$this->navigation_block = ( new Navigation\Block( $polylang ) )->init();
 

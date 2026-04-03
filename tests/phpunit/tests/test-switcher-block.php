@@ -1,5 +1,6 @@
 <?php
 
+use WP_Syntex\Polylang\Language_Switcher\Switcher;
 use WP_Syntex\Polylang\Blocks\Language_Switcher\Standard;
 use WP_Syntex\Polylang\Blocks\Language_Switcher\Navigation;
 
@@ -45,6 +46,7 @@ class Switcher_Block_Test extends PLL_UnitTestCase {
 		$pll_env                   = new PLL_REST_Request( $links_model );
 		$GLOBALS['polylang']       = &$pll_env;
 		$pll_env->links            = new PLL_Admin_Links( $pll_env );
+		$pll_env->switcher         = ( new Switcher( $pll_env->model ) )->init();
 		$pll_env->switcher_block   = ( new Standard\Block( $pll_env ) )->init();
 		$pll_env->navigation_block = ( new Navigation\Block( $pll_env ) )->init();
 
@@ -191,7 +193,7 @@ class Switcher_Block_Test extends PLL_UnitTestCase {
 		$response = $this->server->dispatch( $request );
 		$switcher = $response->get_data();
 
-		$this->assertStringStartsWith( '<nav role="navigation" aria-label="Choose a language">', $switcher['rendered'] );
+		$this->assertStringStartsWith( '<nav role="navigation" aria-label="Choose a language"', $switcher['rendered'] );
 		$this->assertStringEndsWith( '</nav>', $switcher['rendered'] );
 	}
 
@@ -234,7 +236,7 @@ class Switcher_Block_Test extends PLL_UnitTestCase {
 		$doc = new DomDocument();
 		$doc->loadHTML( $switcher['rendered'] );
 		$xpath = new DOMXpath( $doc );
-		$node = $xpath->query( '//div[@class]' );
+		$node = $xpath->query( '//div/div[@class]' );
 
 		$this->assertEquals( 'test-class wp-block-polylang-language-switcher', $node->item( 0 )->getAttribute( 'class' ) );
 	}

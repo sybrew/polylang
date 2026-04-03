@@ -1,5 +1,7 @@
 <?php
 
+use WP_Syntex\Polylang\Language_Switcher\Switcher;
+
 class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 	/**
 	 * @var string
@@ -20,6 +22,8 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 
 		self::create_language( 'en_US' );
 		self::create_language( 'fr_FR' );
+
+		self::require_api();
 	}
 
 	/**
@@ -34,9 +38,10 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 		// We need to register widgets after globals cleanup.
 		wp_widgets_init();
 
-		$links_model         = self::$model->get_links_model();
-		$this->pll_rest      = new PLL_REST_Request( $links_model );
-		$GLOBALS['polylang'] = &$this->pll_rest;
+		$links_model              = self::$model->get_links_model();
+		$this->pll_rest           = new PLL_REST_Request( $links_model );
+		$this->pll_rest->switcher = ( new Switcher( $this->pll_rest->model ) )->init();
+		$GLOBALS['polylang']      = &$this->pll_rest;
 	}
 
 	/**
@@ -124,7 +129,7 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 		$menu_container_query = '//div[@class="menu-menu_test-container"]';
 		$menu_list_query = '//ul[@id="menu-menu_test"]';
 		$this->assertSame( 1, $xpath->query( $widget_query )->length, 'The widget container is not rendered.' );
-		$this->assertSame( 1, $xpath->query( $menu_container_query )->length, 'The navigation menu container is not rendered.' );
+		$this->assertSame( 1, $xpath->query( $menu_container_query )->length, 'The navigation menu container is not rendered.' ); ////
 		$this->assertSame( 1, $xpath->query( $menu_list_query )->length, 'The navigation menu list is not rendered.' );
 
 		$en_query = '//a[@lang="en-US"]';

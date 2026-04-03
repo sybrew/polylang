@@ -1,5 +1,7 @@
 <?php
 
+use WP_Syntex\Polylang\Language_Switcher\Switcher;
+
 class Nav_Menus_Test extends PLL_UnitTestCase {
 
 	/**
@@ -94,6 +96,7 @@ class Nav_Menus_Test extends PLL_UnitTestCase {
 
 		// test nav menus on frontend when using theme locations
 		$frontend->nav_menu = new PLL_Frontend_Nav_Menu( $frontend );
+		$frontend->switcher = ( new Switcher( $frontend->model ) )->init();
 
 		$args = array( 'theme_location' => $primary_location, 'echo' => false );
 		$this->assertStringContainsString( 'Hello World', wp_nav_menu( $args ) );
@@ -274,10 +277,11 @@ class Nav_Menus_Test extends PLL_UnitTestCase {
 		$primary_location = $this->setup_nav_menus( $options );
 
 		// test nav menus on frontend when using theme locations
-		$frontend = new PLL_Frontend( $this->links_model );
-		$frontend->curlang = self::$model->get_language( 'en' );
-		$frontend->links = new PLL_Frontend_Links( $frontend );
+		$frontend           = new PLL_Frontend( $this->links_model );
+		$frontend->curlang  = self::$model->get_language( 'en' );
+		$frontend->links    = new PLL_Frontend_Links( $frontend );
 		$frontend->nav_menu = new PLL_Frontend_Nav_Menu( $frontend );
+		$frontend->switcher = ( new Switcher( $frontend->model ) )->init();
 
 		self::require_api(); // usually loaded only if an instance of Polylang exists
 		$GLOBALS['polylang'] = $frontend; // FIXME we still use PLL() in PLL_Frontend_Nav_Menu
@@ -294,10 +298,11 @@ class Nav_Menus_Test extends PLL_UnitTestCase {
 		$primary_location = $this->setup_nav_menus( $options );
 
 		// Test nav menus on frontend when using theme locations.
-		$frontend = new PLL_Frontend( $this->links_model );
-		$frontend->curlang = self::$model->get_language( 'en' );
-		$frontend->links = new PLL_Frontend_Links( $frontend );
+		$frontend           = new PLL_Frontend( $this->links_model );
+		$frontend->curlang  = self::$model->get_language( 'en' );
+		$frontend->links    = new PLL_Frontend_Links( $frontend );
 		$frontend->nav_menu = new PLL_Frontend_Nav_Menu( $frontend );
+		$frontend->switcher = ( new Switcher( $frontend->model ) )->init();
 
 		self::require_api(); // Usually loaded only if an instance of Polylang exists.
 		$GLOBALS['polylang'] = $frontend; // FIXME we still use PLL() in PLL_Frontend_Nav_Menu
@@ -348,10 +353,11 @@ class Nav_Menus_Test extends PLL_UnitTestCase {
 		}
 
 		// Frontend to test the displayed menu.
-		$frontend = new PLL_Frontend( $this->links_model );
-		$frontend->curlang = self::$model->get_language( 'en' );
-		$frontend->links = new PLL_Frontend_Links( $frontend );
+		$frontend           = new PLL_Frontend( $this->links_model );
+		$frontend->curlang  = self::$model->get_language( 'en' );
+		$frontend->links    = new PLL_Frontend_Links( $frontend );
 		$frontend->nav_menu = new PLL_Frontend_Nav_Menu( $frontend );
+		$frontend->switcher = ( new Switcher( $frontend->model ) )->init();
 		$frontend->model->set_languages_ready();
 
 		$GLOBALS['polylang'] = $frontend; // FIXME we still use PLL() in PLL_Frontend_Nav_Menu

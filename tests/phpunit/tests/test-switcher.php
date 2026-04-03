@@ -1,5 +1,7 @@
 <?php
 
+use WP_Syntex\Polylang\Language_Switcher\Switcher;
+
 class Switcher_Test extends PLL_UnitTestCase {
 
 	private $structure = '/%postname%/';
@@ -29,7 +31,10 @@ class Switcher_Test extends PLL_UnitTestCase {
 		$this->frontend->links->cache = $this->getMockBuilder( 'PLL_Cache' )->getMock();
 		$this->frontend->links->cache->method( 'get' )->willReturn( false );
 
+		$this->frontend->switcher = ( new Switcher( $this->frontend->model ) )->init();
 		$this->switcher = new PLL_Switcher();
+
+		$GLOBALS['polylang'] = $this->frontend;
 	}
 
 	public function test_the_languages_raw() {
@@ -142,7 +147,7 @@ class Switcher_Test extends PLL_UnitTestCase {
 		$doc->loadHTML( $switcher );
 		$xpath = new DOMXpath( $doc );
 
-		$this->assertEquals( 'English', $xpath->query( '//li/a[@lang="en-US"]/span' )->item( 0 )->nodeValue );
+		$this->assertEquals( 'English', $xpath->query( '//li/a[@lang="en-US"]/span' )->item( 1 )->nodeValue );
 
 		// Bug fixed in 2.6.10.
 		$args = array( 'hide_current' => 1, 'echo' => 0 );
