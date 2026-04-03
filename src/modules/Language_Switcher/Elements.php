@@ -127,11 +127,6 @@ class Elements {
 	 * @phpstan-return ElementData
 	 */
 	protected function add_url( array $element, PLL_Language $language ): array {
-		if ( $this->settings->force_home ) {
-			$element['url'] = $this->links->get_home_url( $language );
-			return $element;
-		}
-
 		$element['url'] = $this->get_element_original_url( $language );
 
 		if ( empty( $element['url'] ) ) {
@@ -150,7 +145,11 @@ class Elements {
 		 */
 		$element['url'] = apply_filters( 'pll_the_language_link', $element['url'], $language->slug, $language->locale );
 
-		if ( empty( $element['url'] ) && ! $this->settings->hide_if_no_translation ) {
+		if ( empty( $element['url'] ) && $this->settings->hide_if_no_translation ) {
+			return $element;
+		}
+
+		if ( empty( $element['url'] ) || $this->settings->force_home ) {
 			$element['url'] = $this->links->get_home_url( $language );
 		}
 

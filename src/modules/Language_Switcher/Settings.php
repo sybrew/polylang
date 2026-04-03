@@ -304,9 +304,6 @@ class Settings {
 			'hide_if_no_translation' => array(
 				'label'   => 'Hide languages with no translation',
 				'default' => $defaults['hide_if_no_translation'],
-				'hide_if' => array(
-					'force_home' => true,
-				),
 			),
 		);
 
@@ -447,11 +444,6 @@ class Settings {
 		// Make sure something is displayed.
 		if ( ! $settings->show_flags && empty( $settings->show_labels ) ) {
 			$settings->show_labels = 'names';
-		}
-
-		// When linking to home pages, we don't hide items with no translations.
-		if ( $settings->force_home ) {
-			$settings->hide_if_no_translation = false;
 		}
 
 		return $is_array ? (array) $settings : $settings;
