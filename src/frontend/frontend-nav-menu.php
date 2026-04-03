@@ -111,7 +111,7 @@ class PLL_Frontend_Nav_Menu extends PLL_Nav_Menu {
 				$options = apply_filters( 'pll_the_languages_args', $options ); // Honor the filter here for 'show_flags', 'show_names' and 'dropdown'.
 
 				$switcher = new PLL_Switcher();
-				$args = array_merge( array( 'raw' => 1 ), $options );
+				$args = array_merge( $options, array( 'raw' => 1 ) );
 
 				/** @var array */
 				$the_languages = $switcher->the_languages( PLL()->links, $args );
