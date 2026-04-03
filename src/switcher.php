@@ -219,7 +219,7 @@ class PLL_Switcher {
 
 		if ( empty( $args['dropdown'] ) ) {
 			if ( empty( PLL()->switcher ) ) {
-				return '';
+				return ! empty( $args['raw'] ) ? array() : '';
 			}
 
 			$settings = self::build_settings( $args );
