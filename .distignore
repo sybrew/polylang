@@ -1,21 +1,34 @@
-# Files to exclude from the distribution.
+# Files
 
-bin/
-coverage/
-css/src/
-js/src/
-node_modules/
-tests/
-tmp/
+.*
+babel.config.json
 composer.json
 composer.lock
+DB-CONFIG
 issue_template.md
 package.json
 package-lock.json
-phpcs.xml.dist
+*.xml.dist
 phpstan-baseline.neon
 phpstan.neon.dist
 phpunit.xml
 readme.md
 rector.php
 webpack.config.js
+
+# Folders
+
+bin/
+changelog/
+coverage/
+css/src/
+js/src/
+node_modules/
+tests/
+tmp/
+
+# Playwright
+
+playwright-report/
+artifacts/
+test-results/
