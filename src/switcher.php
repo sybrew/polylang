@@ -229,11 +229,23 @@ class PLL_Switcher {
 				return self::new_to_old_elements( $elements, $settings, $this->links );
 			}
 
+			$out = PLL()->switcher->get( $settings, $this->links );
+
+			/**
+			 * Filter the whole HTML markup returned by the 'pll_the_languages' template tag.
+			 *
+			 * @since 0.8
+			 *
+			 * @param string $html HTML returned/outputted by the template tag.
+			 * @param array  $args Arguments passed to the template tag.
+			 */
+			$out = apply_filters( 'pll_the_languages', $out, $args );
+
 			if ( isset( $args['echo'] ) && empty( $args['echo'] ) ) {
-				return PLL()->switcher->get( $settings, $this->links );
+				return $out;
 			}
 
-			PLL()->switcher->print( $settings, $this->links );
+			echo $out; // phpcs:ignore WordPress.Security.EscapeOutput
 			return '';
 		}
 
