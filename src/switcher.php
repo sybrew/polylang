@@ -319,11 +319,10 @@ class PLL_Switcher {
 	 * }
 	 * @return array
 	 */
-	public static function old_to_new_settings( array $args ): array {
+	private static function old_to_new_settings( array $args ): array {
 		$args     = wp_parse_args( $args, self::DEFAULTS );
 		$settings = array(
-			'layout'       => 'vertical',
-			'alignment'    => 'left',
+			'layout'       => ! empty( $args['dropdown'] ) ? 'select' : 'horizontal',
 			'show_wrapper' => false,
 		);
 
@@ -336,30 +335,14 @@ class PLL_Switcher {
 		 */
 		$args = apply_filters( 'pll_the_languages_args', $args );
 
-		if ( empty( $args['hide_if_empty'] ) ) {
-			$settings['hide_if_empty'] = false;
-		}
-
-		if ( ! empty( $args['show_flags'] ) ) {
-			$settings['show_flags'] = true;
-		}
-
 		if ( isset( $args['show_names'] ) && empty( $args['show_names'] ) ) {
 			$settings['show_labels'] = '';
 		} elseif ( 'slug' === $args['display_names_as'] ) {
 			$settings['show_labels'] = 'codes';
 		}
 
-		if ( ! empty( $args['force_home'] ) ) {
-			$settings['force_home'] = true;
-		}
-
-		if ( ! empty( $args['hide_if_no_translation'] ) ) {
-			$settings['hide_if_no_translation'] = true;
-		}
-
-		if ( ! empty( $args['hide_current'] ) ) {
-			$settings['hide_current'] = true;
+		foreach ( array( 'hide_if_empty', 'show_flags', 'force_home', 'hide_if_no_translation', 'hide_current' ) as $name ) {
+			$settings[ $name ] = ! empty( $args[ $name ] );
 		}
 
 		if ( ! empty( $args['post_id'] ) ) {
