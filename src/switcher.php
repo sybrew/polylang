@@ -225,11 +225,11 @@ class PLL_Switcher {
 			$settings = self::old_to_new_settings( $args );
 
 			if ( ! empty( $args['raw'] ) ) {
-				$elements = PLL()->switcher->get_elements( $settings, $this->links );
+				$elements = PLL()->switcher->get_elements( $settings );
 				return self::new_to_old_elements( $elements, $settings, $this->links );
 			}
 
-			$out = PLL()->switcher->get( $settings, $this->links );
+			$out = PLL()->switcher->get( $settings );
 
 			/**
 			 * Filter the whole HTML markup returned by the 'pll_the_languages' template tag.

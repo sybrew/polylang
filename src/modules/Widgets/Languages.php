@@ -80,12 +80,12 @@ class Languages extends WP_Widget {
 	 * @phpstan-param NewInstance|OldInstance $instance
 	 */
 	public function widget( $args, $instance ): void {
-		if ( empty( PLL()->links ) || empty( PLL()->switcher ) ) {
+		if ( empty( PLL()->switcher ) ) {
 			return;
 		}
 
 		$instance = Settings::maybe_convert_legacy_options( $instance );
-		$list     = PLL()->switcher->get( $instance, PLL()->links );
+		$list     = PLL()->switcher->get( $instance );
 
 		if ( empty( $list ) ) {
 			return;

@@ -24,14 +24,21 @@ class Switcher {
 	private $model;
 
 	/**
+	 * @var PLL_Links
+	 */
+	private $links;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 3.9
 	 *
 	 * @param PLL_Model $model Polylang's model.
+	 * @param PLL_Links $links Instance of `PLL_Links`.
 	 */
-	public function __construct( PLL_Model $model ) {
+	public function __construct( PLL_Model $model, PLL_Links $links ) {
 		$this->model = $model;
+		$this->links = $links;
 	}
 
 	/**
@@ -114,14 +121,13 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param array     $settings Settings.
-	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @param array $settings Settings.
 	 * @return void
 	 *
 	 * @phpstan-param OptionalSettings $settings
 	 */
-	public function print( array $settings, PLL_Links $links ): void {
-		echo $this->get( $settings, $links ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	public function print( array $settings ): void {
+		echo $this->get( $settings ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -129,23 +135,20 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param array     $settings Settings.
-	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @param array $settings Settings.
 	 * @return string
 	 *
 	 * @phpstan-param OptionalSettings $settings
 	 */
-	public function get( array $settings, PLL_Links $links ): string {
-		$settings = new Settings( $settings, $links );
-		$switcher = $this->get_switcher( $settings, $links );
+	public function get( array $settings ): string {
+		$settings = new Settings( $settings, $this->links );
+		$switcher = $this->get_switcher( $settings );
 
 		if ( empty( $switcher ) ) {
 			return '';
 		}
 
-		$html = $switcher->get(
-			$this->get_languages( $settings, $links )
-		);
+		$html = $switcher->get( $this->get_languages( $settings ) );
 
 		/**
 		 * Filter the whole switcher markup.
@@ -163,22 +166,21 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param array     $settings Settings.
-	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @param array $settings Settings.
 	 * @return Element[]
 	 *
 	 * @phpstan-param OptionalSettings $settings
 	 */
-	public function get_elements( array $settings, PLL_Links $links ): array {
-		$settings = new Settings( $settings, $links );
-		$switcher = $this->get_switcher( $settings, $links );
+	public function get_elements( array $settings ): array {
+		$settings = new Settings( $settings, $this->links );
+		$switcher = $this->get_switcher( $settings );
 
 		if ( empty( $switcher ) ) {
 			return array();
 		}
 
 		return $switcher->get_elements(
-			$this->get_languages( $settings, $links )
+			$this->get_languages( $settings )
 		)->get();
 	}
 
@@ -187,21 +189,20 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings  $settings Instance of `Settings`.
-	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @param Settings $settings Instance of `Settings`.
 	 * @return Switchers\Abstract_Switcher|null
 	 */
-	private function get_switcher( Settings $settings, PLL_Links $links ): ?Switchers\Abstract_Switcher {
+	private function get_switcher( Settings $settings ): ?Switchers\Abstract_Switcher {
 		switch ( $settings->layout ) {
 			case 'horizontal':
 			case 'vertical':
-				return new Switchers\Nav( $settings, $links );
+				return new Switchers\Nav( $settings, $this->links );
 
 			case 'dropdown':
-				return new Switchers\Dropdown( $settings, $links );
+				return new Switchers\Dropdown( $settings, $this->links );
 
 			case 'select':
-				return new Switchers\Select( $settings, $links );
+				return new Switchers\Select( $settings, $this->links );
 
 			default:
 				return null;
@@ -213,12 +214,11 @@ class Switcher {
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings  $settings Instance of `Settings`.
-	 * @param PLL_Links $links    Instance of `PLL_Links`.
+	 * @param Settings $settings Instance of `Settings`.
 	 * @return \PLL_Language[]
 	 */
-	private function get_languages( Settings $settings, PLL_Links $links ): array {
+	private function get_languages( Settings $settings ): array {
 		$filter = $settings->hide_if_empty ? 'hide_empty' : '';
-		return $links->model->languages->filter( $filter )->get_list();
+		return $this->links->model->languages->filter( $filter )->get_list();
 	}
 }
