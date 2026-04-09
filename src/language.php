@@ -475,6 +475,51 @@ class PLL_Language extends PLL_Language_Deprecated {
 	}
 
 	/**
+	 * Returns the language flag or the language slug if there is no flag.
+	 *
+	 * @since 3.9
+	 *
+	 * @param string $context Optional. Allows to modify the markup depending on how the flag is used. Possible values are:
+	 *                        - `full`: the flag has everything,
+	 *                        - `minimal`: the flag is preceded or followed by a text that would make it redundant.
+	 *                        Default is `full`.
+	 * @return string
+	 *
+	 * @phpstan-param 'full'|'minimal' $context
+	 */
+	public function get_admin_flag( string $context = 'full' ): string {
+		if ( ! empty( $this->flag ) ) {
+			if ( 'minimal' === $context ) {
+				// Hidden from screen readers.
+				return str_replace( '<img ', '<img aria-hidden="true" tabindex="-1" ', $this->flag );
+			}
+
+			return str_replace(
+				'<img ',
+				sprintf(
+					'<img lang="%1$s" dir="%2$s" ',
+					esc_attr( $this->get_locale( 'display' ) ),
+					$this->is_rtl ? 'rtl' : 'ltr'
+				),
+				$this->flag
+			);
+		}
+
+		if ( 'minimal' === $context ) {
+			// Hidden from screen readers.
+			return sprintf( '<abbr aria-hidden="true" tabindex="-1">%s</abbr>', esc_html( strtoupper( $this->slug ) ) );
+		}
+
+		return sprintf(
+			'<abbr title="%1$s" lang="%2$s" dir="%3$s">%4$s</abbr>',
+			esc_attr( $this->name ),
+			esc_attr( $this->get_locale( 'display' ) ),
+			$this->is_rtl ? 'rtl' : 'ltr',
+			esc_html( strtoupper( $this->slug ) )
+		);
+	}
+
+	/**
 	 * Returns the html of the custom flag if any, or the default flag otherwise.
 	 *
 	 * @since 2.8
