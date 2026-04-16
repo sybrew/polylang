@@ -5,49 +5,37 @@
 
 namespace WP_Syntex\Polylang\Language_Switcher;
 
-use WP_Post;
 use PLL_Links;
 use PLL_Language;
-use PLL_Frontend_Links;
+use WP_Syntex\Polylang\Language_Switcher\Settings\Generic as Settings;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class that builds the data for the language switcher.
+ * Hold a collection of data representing each item.
  *
  * @since 3.9
- *
- * @phpstan-import-type ElementData from Element
  */
 class Elements {
 	/**
 	 * @var Settings
 	 */
-	protected Settings $settings;
+	private Settings $settings;
 
 	/**
-	 * @var PLL_Links
+	 * @var Element[]|null
 	 */
-	protected PLL_Links $links;
-
-	/**
-	 * @var PLL_Language[]
-	 */
-	protected array $languages;
+	private ?array $elements = null;
 
 	/**
 	 * Constructor.
 	 *
 	 * @since 3.9
 	 *
-	 * @param Settings       $settings  Instance of `Settings`.
-	 * @param PLL_Links      $links     Instance of `PLL_Links`.
-	 * @param PLL_Language[] $languages A list of language instances.
+	 * @param Settings $settings Instance of `Settings`.
 	 */
-	public function __construct( Settings $settings, PLL_Links $links, array $languages ) {
-		$this->settings  = $settings;
-		$this->links     = $links;
-		$this->languages = $languages;
+	public function __construct( Settings $settings ) {
+		$this->settings = $settings;
 	}
 
 	/**
@@ -56,175 +44,78 @@ class Elements {
 	 * @since 3.9
 	 *
 	 * @return Element[]
+	 *
+	 * @phpstan-return array<non-empty-string, Element>
 	 */
 	public function get(): array {
-		$is_first = true;
-		$current  = $this->get_current_language();
 		$out      = array();
+		$is_first = true;
 
-		foreach ( $this->languages as $language ) {
-			if ( $current === $language->slug && $this->settings->hide_current ) {
+		foreach ( $this->get_all() as $element ) {
+			if ( $this->settings->hide_current && $element->is_current ) {
 				// Hide current item.
 				continue;
 			}
 
-			$item_classes = array_merge(
-				array( 'lang-item', "lang-item-{$language->term_id}", "lang-item-{$language->slug}" ),
-				$this->settings->item_classes
-			);
-			$element     = array(
-				'id'           => (int) $language->term_id,
-				'label'        => '',
-				'slug'         => $language->slug,
-				'locale'       => $language->get_locale( 'display' ),
-				'url'          => '',
-				'flag'         => '',
-				'direction'    => $language->is_rtl ? 'rtl' : 'ltr',
-				'order'        => (int) $language->term_group,
-				'is_current'   => $current === $language->slug,
-				'item_classes' => $item_classes,
-				'link_classes' => $this->settings->link_classes,
-			);
-
-			if ( $element['is_current'] ) {
-				$element['item_classes'][] = 'current-lang';
+			if ( $this->settings->hide_if_empty && $element->is_empty ) {
+				// Hide empty item.
+				continue;
 			}
 
-			$element = $this->add_url( $element, $language );
-
-			if ( empty( $element['url'] ) ) {
+			if ( empty( $element->url ) ) {
 				// Failed to get a URL.
 				continue;
 			}
 
-			if ( ! empty( $this->settings->show_labels ) ) {
-				$element['label'] = 'codes' === $this->settings->show_labels ? $language->slug : $language->name;
-			}
-
-			$element['flag'] = $this->get_element_flag( $language );
-
 			if ( $is_first ) {
-				$element['item_classes'][] = 'lang-item-first';
-				$is_first                  = false;
+				$is_first = false;
+				$element  = clone( $element ); // We don't want the item class to be added permanently to the object.
+
+				$element->item_classes[] = 'lang-item-first';
 			}
 
-			$out[ $language->slug ] = new Element( $element );
+			$out[ $element->slug ] = $element;
 		}
 
 		return $out;
 	}
 
 	/**
-	 * Fills the `url` key of the given element.
+	 * Returns the current item data.
 	 *
 	 * @since 3.9
 	 *
-	 * @param array        $element  Element data.
-	 * @param PLL_Language $language A language instance.
-	 * @return array
-	 *
-	 * @phpstan-param ElementData $element
-	 * @phpstan-return ElementData
+	 * @return ?Element
 	 */
-	protected function add_url( array $element, PLL_Language $language ): array {
-		$element['url'] = $this->get_element_original_url( $language );
-
-		if ( empty( $element['url'] ) ) {
-			$element['item_classes'][] = 'no-translation';
-		}
-
-		/**
-		 * Filter the link in the language switcher.
-		 *
-		 * @since 0.7
-		 * @since 3.9 Return an empty string instead of `null`.
-		 *
-		 * @param string $url    The link URL, an empty string if no translation was found.
-		 * @param string $slug   The language code.
-		 * @param string $locale The language locale.
-		 */
-		$element['url'] = apply_filters( 'pll_the_language_link', $element['url'], $language->slug, $language->locale );
-
-		if ( empty( $element['url'] ) && $this->settings->hide_if_no_translation ) {
-			return $element;
-		}
-
-		if ( empty( $element['url'] ) || $this->settings->force_home ) {
-			$element['url'] = $this->links->get_home_url( $language );
-		}
-
-		return $element;
-	}
-
-	/**
-	 * Returns the original URL of the element.
-	 *
-	 * @since 3.9.0
-	 *
-	 * @param PLL_Language $language A language instance.
-	 * @return string
-	 */
-	protected function get_element_original_url( PLL_Language $language ): string {
-		global $post;
-
-		// Priority to the post passed in parameters.
-		if ( $this->settings->post_id ) {
-			$tr_id = $this->links->model->post->get( $this->settings->post_id, $language );
-
-			if ( $tr_id && $this->links->model->post->current_user_can_read( $tr_id ) ) {
-				return (string) get_permalink( $tr_id );
+	public function get_current(): ?Element {
+		foreach ( $this->get_all() as $element ) {
+			if ( $element->is_current ) {
+				return $element;
 			}
 		}
-
-		// If we are on frontend.
-		if ( $this->links instanceof PLL_Frontend_Links ) {
-			return $this->links->get_translation_url( $language );
-		}
-
-		// For blocks in posts in REST requests.
-		if ( $post instanceof WP_Post ) {
-			$tr_id = $this->links->model->post->get( $post->ID, $language );
-
-			if ( $tr_id && $this->links->model->post->current_user_can_read( $tr_id ) ) {
-				return (string) get_permalink( $tr_id );
-			}
-		}
-
-		return '';
+		return null;
 	}
 
 	/**
-	 * Returns the flag for the given language.
+	 * Returns all the switcher's data, even the elements that should be excluded according to the settings.
 	 *
-	 * @since 3.9.0
+	 * @since 3.9
 	 *
-	 * @param PLL_Language $language A language instance.
-	 * @return string
+	 * @return Element[]
+	 *
+	 * @phpstan-return array<non-empty-string, Element>
 	 */
-	protected function get_element_flag( PLL_Language $language ): string {
-		if ( $this->settings->show_flags ) {
-			return $language->get_display_flag( ! empty( $this->settings->show_labels ) ? 'no-alt' : 'alt' );
+	public function get_all(): array {
+		if ( is_array( $this->elements ) ) {
+			return $this->elements;
 		}
 
-		return '';
-	}
+		$this->elements = array();
 
-	/**
-	 * Returns the current language code.
-	 *
-	 * @since 3.9.0
-	 *
-	 * @return string
-	 */
-	protected function get_current_language(): string {
-		if ( $this->settings->current_language_code ) {
-			return $this->settings->current_language_code;
+		foreach ( $this->settings->get_links()->model->languages->get_list() as $language ) {
+			$this->elements[ $language->slug ] = new Element( $language, $this->settings );
 		}
 
-		if ( isset( $this->links->curlang ) ) {
-			return $this->links->curlang->slug;
-		}
-
-		return $this->links->options['default_lang'];
+		return $this->elements;
 	}
 }

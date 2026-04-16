@@ -5,7 +5,10 @@
 
 namespace WP_Syntex\Polylang\Language_Switcher\Switchers;
 
-use WP_Syntex\Polylang\Language_Switcher\Element;
+use WP_Syntex\Polylang\Language_Switcher\Assets;
+use WP_Syntex\Polylang\Language_Switcher\Elements;
+use WP_Syntex\Polylang\Language_Switcher\Settings\Generic as Settings;
+use WP_Syntex\Polylang\Language_Switcher\Switchers\Types\Select as Type;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,64 +19,37 @@ defined( 'ABSPATH' ) || exit;
  */
 class Select extends Abstract_Switcher {
 	/**
-	 * Returns the markup of the switcher.
-	 *
-	 * @since 3.9.0
-	 *
-	 * @param \PLL_Language[] $languages A list of language instances.
-	 * @return string
-	 */
-	public function get( array $languages ): string {
-		$out = '';
-
-		foreach ( $this->get_elements( $languages )->get() as $element ) {
-			$out .= $this->get_item( $element );
-		}
-
-		if ( ! $this->settings->show_wrapper || empty( $out ) ) {
-			return $out;
-		}
-
-		$out = sprintf(
-			'<div class="%1$s"><label class="screen-reader-text" for="%2$s">%3$s</label><select class="pll-switcher-select" id="%2$s">%4$s</select></div>',
-			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
-			"lang_choice_polylang-{$this->settings->unique_id}",
-			esc_html( __( 'Choose a language', 'polylang' ) ),
-			"\n{$out}"
-		);
-
-		return "\n{$out}\n";
-	}
-
-	/**
-	 * Returns the markup of an item.
+	 * Constructor.
 	 *
 	 * @since 3.9
 	 *
-	 * @param Element $element An element.
+	 * @param Settings $settings Instance of `Settings`.
+	 * @param Elements $elements Instance of `Elements`.
+	 */
+	public function __construct( Settings $settings, Elements $elements ) {
+		parent::__construct( $settings, $elements, new Type( $settings ) );
+	}
+
+	/**
+	 * Returns the markup of the switcher.
+	 *
+	 * @since 3.9
+	 *
 	 * @return string
 	 */
-	protected function get_item( Element $element ): string {
-		$item_atts = sprintf(
-			'lang="%1$s" value="%2$s"%3$s',
-			esc_attr( $element->locale ),
-			esc_url( $element->url ),
-			selected( $element->is_current, true, false )
-		);
+	public function get(): string {
+		$out = '';
 
-		if ( ! empty( $element->item_classes ) ) {
-			$item_atts .= sprintf(
-				' class="%s"',
-				esc_attr( implode( ' ', $element->item_classes ) )
-			);
+		foreach ( $this->elements->get() as $element ) {
+			$out .= $this->item_type->get_row( $element );
 		}
 
-		$out = sprintf(
-			'<option %s>%s</option>',
-			$item_atts,
-			esc_html( $element->label )
-		);
+		if ( empty( $out ) || ! $this->settings->show_wrapper ) {
+			return $out;
+		}
 
-		return "\t{$out}\n";
+		Assets::enqueue_frontend_scripts();
+
+		return $this->item_type->wrap( $out );
 	}
 }
