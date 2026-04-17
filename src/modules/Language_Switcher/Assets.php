@@ -5,7 +5,6 @@
 
 namespace WP_Syntex\Polylang\Language_Switcher;
 
-use PLL_Model;
 use WP_Widget_Factory;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,22 +16,6 @@ defined( 'ABSPATH' ) || exit;
  */
 class Assets {
 	public const FRONTEND_ASSET_ID = 'pll-language-switcher';
-
-	/**
-	 * @var PLL_Model
-	 */
-	private $model;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 3.9
-	 *
-	 * @param PLL_Model $model Polylang's model.
-	 */
-	public function __construct( PLL_Model $model ) {
-		$this->model = $model;
-	}
 
 	/**
 	 * Adds hooks.
