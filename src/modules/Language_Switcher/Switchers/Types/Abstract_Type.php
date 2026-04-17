@@ -80,7 +80,7 @@ abstract class Abstract_Type {
 		);
 
 		if ( $this->settings->show_flags ) {
-			$classes[] = 'pll-aspect-ratio-' . str_replace( ':', '', $settings->flag_aspect_ratio );
+			$classes[] = 'pll-aspect-ratio-' . str_replace( ':', '', $this->settings->flag_aspect_ratio );
 		}
 
 		return $classes;
