@@ -3,8 +3,6 @@
  * @package Polylang
  */
 
-use WP_Syntex\Polylang\Language_Switcher\Switcher;
-
 /**
  * A class to display a language switcher on frontend
  *
@@ -154,8 +152,16 @@ class PLL_Switcher {
 				$classes[] = 'no-translation';
 			}
 
-			/** This filter is documented in src/modules/Language_Switcher/Elements.php */
-			$url = apply_filters( 'pll_the_language_link', (string) $url, $slug, $language->locale );
+			/**
+			 * Filter the link in the language switcher
+			 *
+			 * @since 0.7
+			 *
+			 * @param string|null $url    The link, null if no translation was found.
+			 * @param string      $slug   The language code.
+			 * @param string      $locale The language locale
+			 */
+			$url = apply_filters( 'pll_the_language_link', $url, $slug, $language->locale );
 
 			// Hide if no translation exists
 			if ( empty( $url ) && $args['hide_if_no_translation'] ) {
@@ -215,43 +221,17 @@ class PLL_Switcher {
 	 * @return string|array either the html markup of the switcher or the raw elements to build a custom language switcher
 	 */
 	public function the_languages( $links, $args = array() ) {
+
 		$this->links = $links;
-
-		if ( empty( $args['dropdown'] ) ) {
-			if ( empty( PLL()->switcher ) ) {
-				return ! empty( $args['raw'] ) ? array() : '';
-			}
-
-			$settings = self::old_to_new_settings( $args );
-
-			if ( ! empty( $args['raw'] ) ) {
-				$elements = PLL()->switcher->get_elements( $settings );
-				return self::new_to_old_elements( $elements, $settings, $this->links );
-			}
-
-			$out = PLL()->switcher->get( $settings );
-
-			/**
-			 * Filter the whole HTML markup returned by the 'pll_the_languages' template tag.
-			 *
-			 * @since 0.8
-			 *
-			 * @param string $html HTML returned/outputted by the template tag.
-			 * @param array  $args Arguments passed to the template tag.
-			 */
-			$out = apply_filters( 'pll_the_languages', $out, $args );
-
-			if ( isset( $args['echo'] ) && empty( $args['echo'] ) ) {
-				return $out;
-			}
-
-			echo $out; // phpcs:ignore WordPress.Security.EscapeOutput
-			return '';
-		}
-
 		$args = wp_parse_args( $args, self::DEFAULTS );
 
-		/** This filter is documented in src/switcher.php */
+		/**
+		 * Filter the arguments of the 'pll_the_languages' template tag
+		 *
+		 * @since 1.5
+		 *
+		 * @param array $args
+		 */
 		$args = apply_filters( 'pll_the_languages_args', $args );
 
 		// Force not to hide the language for the widget preview even if the option is checked.
@@ -270,11 +250,15 @@ class PLL_Switcher {
 			return $elements;
 		}
 
-		$args['name']     = 'lang_choice_' . $args['dropdown'];
-		$args['class']    = 'pll-switcher-select';
-		$args['value']    = 'url';
-		$args['selected'] = $this->get_link( $this->links->model->get_language( $this->get_current_language( $args ) ), $args );
-		$walker           = new PLL_Walker_Dropdown();
+		if ( $args['dropdown'] ) {
+			$args['name'] = 'lang_choice_' . $args['dropdown'];
+			$args['class'] = 'pll-switcher-select';
+			$args['value'] = 'url';
+			$args['selected'] = $this->get_link( $this->links->model->get_language( $this->get_current_language( $args ) ), $args );
+			$walker = new PLL_Walker_Dropdown();
+		} else {
+			$walker = new PLL_Walker_List();
+		}
 
 		// Cast each element to stdClass because $walker::walk() expects an array of objects.
 		foreach ( $elements as $i => $element ) {
@@ -292,7 +276,7 @@ class PLL_Switcher {
 		$out = apply_filters( 'pll_the_languages', $walker->walk( $elements, -1, $args ), $args );
 
 		// Javascript to switch the language when using a dropdown list.
-		if ( 0 === $args['admin_render'] ) {
+		if ( $args['dropdown'] && 0 === $args['admin_render'] ) {
 			// Accept only few valid characters for the urls_x variable name (as the widget id includes '-' which is invalid).
 			$out .= sprintf(
 				'<script%1$s>
@@ -307,109 +291,5 @@ class PLL_Switcher {
 			echo $out; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 		return $out;
-	}
-
-	/**
-	 * Builds the settings by converting the old structure to the new one.
-	 *
-	 * @since 3.9
-	 *
-	 * @param array $args {
-	 *     Optional array of arguments.
-	 *
-	 *     @type int      $hide_if_empty          Hides languages with no posts ( or pages ) if set to 1, defaults to 1.
-	 *     @type int      $show_flags             Displays flags if set to 1, defaults to 0.
-	 *     @type int      $show_names             Shows language names if set to 1, defaults to 1.
-	 *     @type string   $display_names_as       Whether to display the language name or its slug, valid options are 'slug' and 'name', defaults to name.
-	 *     @type int      $force_home             Will always link to home in translated language if set to 1, defaults to 0.
-	 *     @type int      $hide_if_no_translation Hides the link if there is no translation if set to 1, defaults to 0.
-	 *     @type int      $hide_current           Hides the current language if set to 1, defaults to 0.
-	 *     @type int      $post_id                Returns links to the translations of the post defined by post_id if set, defaults not set.
-	 *     @type string   $admin_current_lang     The current language code in an admin context. Default not set.
-	 *     @type string[] $classes                A list of CSS classes to set to each elements outputted.
-	 *     @type string[] $link_classes           A list of CSS classes to set to each link outputted.
-	 * }
-	 * @return array
-	 */
-	private static function old_to_new_settings( array $args ): array {
-		$args     = wp_parse_args( $args, self::DEFAULTS );
-		$settings = array(
-			'layout'       => ! empty( $args['dropdown'] ) ? 'select' : 'horizontal',
-			'show_wrapper' => false,
-		);
-
-		/**
-		 * Filter the arguments of the 'pll_the_languages' template tag.
-		 *
-		 * @since 1.5
-		 *
-		 * @param array $args
-		 */
-		$args = apply_filters( 'pll_the_languages_args', $args );
-
-		if ( isset( $args['show_names'] ) && empty( $args['show_names'] ) ) {
-			$settings['show_labels'] = '';
-		} elseif ( 'slug' === $args['display_names_as'] ) {
-			$settings['show_labels'] = 'codes';
-		}
-
-		foreach ( array( 'hide_if_empty', 'show_flags', 'force_home', 'hide_if_no_translation', 'hide_current' ) as $name ) {
-			$settings[ $name ] = ! empty( $args[ $name ] );
-		}
-
-		if ( ! empty( $args['post_id'] ) ) {
-			$settings['post_id'] = (int) $args['post_id'];
-		}
-
-		if ( ! empty( $args['admin_current_lang'] ) ) {
-			$settings['current_language_code'] = $args['admin_current_lang'];
-		}
-
-		if ( ! empty( $args['classes'] ) ) {
-			$settings['item_classes'] = array_filter( $args['classes'] );
-		}
-
-		if ( ! empty( $args['link_classes'] ) ) {
-			$settings['link_classes'] = array_filter( $args['link_classes'] );
-		}
-
-		return $settings;
-	}
-
-	/**
-	 * Builds the elements data by converting the new structure to the old one.
-	 *
-	 * @since 3.9
-	 *
-	 * @param WP_Syntex\Polylang\Language_Switcher\Element[] $elements List of instances of `Element`.
-	 * @param array                                          $settings Settings.
-	 * @param PLL_Links                                      $links    Instance of `PLL_Links`.
-	 * @return array[]
-	 */
-	private static function new_to_old_elements( array $elements, array $settings, PLL_Links $links ): array {
-		$filter          = ! empty( $settings['hide_if_empty'] ) ? 'hide_empty' : '';
-		$languages       = $links->model->languages->filter( $filter )->get_list();
-		$keyed_languages = array_combine( array_column( $languages, 'slug' ), $languages );
-		$data            = array();
-
-		foreach ( $elements as $slug => $element ) {
-			$language      = $keyed_languages[ $element->slug ];
-			$data[ $slug ] = array(
-				'id'             => $element->id,
-				'order'          => $element->order,
-				'slug'           => $element->slug,
-				'locale'         => $element->locale,
-				'is_rtl'         => 'rtl' === $element->direction,
-				'name'           => isset( $settings['show_labels'] ) && 'codes' === $settings['show_labels'] ? $element->slug : $language->name,
-				'url'            => $element->url,
-				'flag'           => ! empty( $settings['show_flags'] ) ? $element->flag : $language->get_display_flag_url(),
-				'current_lang'   => $element->is_current,
-				'no_translation' => in_array( 'no-translation', $element->item_classes, true ),
-				'classes'        => $element->item_classes,
-				'link_classes'   => $element->link_classes,
-			);
-		}
-
-		return $data;
 	}
 }

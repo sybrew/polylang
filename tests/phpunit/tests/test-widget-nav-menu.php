@@ -1,7 +1,5 @@
 <?php
 
-use WP_Syntex\Polylang\Language_Switcher\Switcher;
-
 class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 	/**
 	 * @var string
@@ -22,8 +20,6 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 
 		self::create_language( 'en_US' );
 		self::create_language( 'fr_FR' );
-
-		self::require_api();
 	}
 
 	/**
@@ -38,10 +34,9 @@ class Widget_Nav_Menu_Test extends PLL_UnitTestCase {
 		// We need to register widgets after globals cleanup.
 		wp_widgets_init();
 
-		$links_model              = self::$model->get_links_model();
-		$this->pll_rest           = new PLL_REST_Request( $links_model );
-		$this->pll_rest->switcher = ( new Switcher( $this->pll_rest->model ) )->init();
-		$GLOBALS['polylang']      = &$this->pll_rest;
+		$links_model         = self::$model->get_links_model();
+		$this->pll_rest      = new PLL_REST_Request( $links_model );
+		$GLOBALS['polylang'] = &$this->pll_rest;
 	}
 
 	/**
