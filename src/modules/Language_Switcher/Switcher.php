@@ -54,6 +54,8 @@ class Switcher {
 				return '';
 		}
 
+		$html = $this->maybe_filter_legacy_switcher( $switcher->get(), $settings );
+
 		/**
 		 * Filter the whole switcher markup.
 		 *
@@ -62,7 +64,7 @@ class Switcher {
 		 * @param string   $html     Switcher markup.
 		 * @param Settings $settings Switcher settings.
 		 */
-		return (string) apply_filters( 'pll_language_switcher', $switcher->get(), $settings );
+		return (string) apply_filters( 'pll_language_switcher', $html, $settings );
 	}
 
 	/**
@@ -75,5 +77,35 @@ class Switcher {
 	 */
 	public function get_elements( Settings $settings ): Elements {
 		return new Elements( $settings );
+	}
+
+	/**
+	 * Returns the switcher's markup after applying the deprecated filter `pll_the_languages`.
+	 * However, 100% backward compatibility is not ensured since the markup is different.
+	 *
+	 * @since 3.9
+	 *
+	 * @param string   $html     The switcher's markup.
+	 * @param Settings $settings Settings.
+	 * @return string
+	 */
+	private function maybe_filter_legacy_switcher( string $html, Settings $settings ): string {
+		if ( ! has_filter( 'pll_the_languages' ) ) {
+			return $html;
+		}
+
+		$args = $settings->convert_to_legacy( $settings->to_array() );
+
+		/**
+		 * Filter the whole HTML markup returned by the 'pll_the_languages' template tag.
+		 *
+		 * @since 0.8
+		 * @since 3.9 Deprecated.
+		 * @deprecated
+		 *
+		 * @param string $html HTML returned/outputted by the template tag.
+		 * @param array  $args Arguments passed to the template tag.
+		 */
+		return (string) apply_filters_deprecated( 'pll_the_languages', array( $html, $args ), '3.9.0', 'pll_language_switcher' );
 	}
 }

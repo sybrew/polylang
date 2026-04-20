@@ -212,6 +212,17 @@ class Generic {
 	}
 
 	/**
+	 * Returns the values.
+	 *
+	 * @since 3.9
+	 *
+	 * @return array
+	 */
+	public function to_array(): array {
+		return array_diff_key( get_object_vars( $this ), array( 'links' => 0, 'increment' => 0 ) );
+	}
+
+	/**
 	 * Returns the instance of `PLL_Links`.
 	 *
 	 * @since 3.9
@@ -376,7 +387,7 @@ class Generic {
 	 * @param array $settings Settings in new structure.
 	 * @return array
 	 */
-	protected function convert_to_legacy( array $settings ): array {
+	public function convert_to_legacy( array $settings ): array {
 		$args = PLL_Switcher::DEFAULTS;
 
 		if ( isset( $settings['layout'] ) && 'select' === $settings['layout'] ) {
