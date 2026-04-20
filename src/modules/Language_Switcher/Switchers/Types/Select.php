@@ -28,7 +28,7 @@ class Select extends Abstract_Type {
 		$out = sprintf(
 			'<div class="%1$s"><label class="screen-reader-text" for="%2$s">%3$s</label><select class="pll-switcher-select" id="%2$s">%4$s</select></div>',
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),
-			"lang_choice_polylang-{$this->settings->unique_id}",
+			esc_attr( $this->settings->unique_id ),
 			esc_html( __( 'Choose a language', 'polylang' ) ),
 			"{$cr}{$inner}"
 		);

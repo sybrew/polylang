@@ -26,7 +26,7 @@ class Nav extends Abstract_Type {
 	public function wrap( string $inner ): string {
 		$cr  = $this->settings->preserve_spacing ? "\n" : '';
 		$out = sprintf(
-			'<%1$s id="pll-switcher-%2$s" class="%3$s" aria-label="%4$s">%5$s</%1$s>',
+			'<%1$s id="%2$s" class="%3$s" aria-label="%4$s">%5$s</%1$s>',
 			$this->supports_html5() ? 'nav' : 'div',
 			esc_attr( $this->settings->unique_id ),
 			esc_attr( implode( ' ', $this->get_wrapper_classes() ) ),

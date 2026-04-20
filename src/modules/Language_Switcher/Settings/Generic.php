@@ -192,7 +192,7 @@ class Generic {
 
 		if ( '' === $this->unique_id ) {
 			++self::$increment;
-			$this->unique_id = (string) self::$increment;
+			$this->unique_id = 'pll-switcher-' . self::$increment;
 		}
 	}
 
