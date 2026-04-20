@@ -62,6 +62,11 @@ class Elements {
 				continue;
 			}
 
+			if ( $this->settings->hide_if_no_translation && ! $element->has_translations ) {
+				// Hide item with no translations.
+				continue;
+			}
+
 			if ( empty( $element->url ) ) {
 				// Failed to get a URL.
 				continue;
