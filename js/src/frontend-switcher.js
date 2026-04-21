@@ -92,7 +92,7 @@ const pllSwitcher = {
 		 */
 		handleEvent: ( event ) => {
 			if ( event.currentTarget.value ) {
-				window.location.href = event.currentTarget.value;
+				window.location.href = event.currentTarget.value; // PHPCS:ignore WordPressVIPMinimum.JS.Window.location, Already escaped in php.
 			}
 		},
 	},
