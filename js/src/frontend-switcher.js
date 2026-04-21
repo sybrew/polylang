@@ -85,7 +85,9 @@ const pllSwitcher = {
 		 * @param {Event} event The event.
 		 */
 		handleEvent: ( event ) => {
-			window.location.href = event.currentTarget.value;
+			if ( event.currentTarget.value ) {
+				window.location.href = event.currentTarget.value;
+			}
 		},
 	},
 };
