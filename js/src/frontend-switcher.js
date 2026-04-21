@@ -4,7 +4,7 @@
 
 const pllSwitcher = {
 	/**
-	 * The buttons alllowing to open/close the submenus.
+	 * The buttons allowing to open/close the submenus.
 	 *
 	 * @member {HTMLElement|null}
 	 */
