@@ -686,10 +686,10 @@ class PLL_Language extends PLL_Language_Deprecated {
 	 * @see https://codepen.io/tigt/post/optimizing-svgs-in-data-uris.
 	 * @since 3.8
 	 *
-	 * @string $svg A string representing an SVG image.
+	 * @param string $svg A string representing an SVG image.
 	 * @return string Encode SVG.
 	 */
-	protected static function encode_svg( $svg ) {
+	protected static function encode_svg( string $svg ): string {
 		$to_replace = array(
 			'"'  => "'",
 			'<'  => '%3C',
