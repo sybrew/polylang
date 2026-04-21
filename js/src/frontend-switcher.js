@@ -56,6 +56,9 @@ const pllSwitcher = {
 		}
 	},
 
+	/**
+	 * Handles the opening and closing of a submenu for a "dropdown" layout.
+	 */
 	openCloseSubmenu: {
 		/**
 		 * Event callback that opens or closes a submenu.
@@ -78,6 +81,9 @@ const pllSwitcher = {
 		},
 	},
 
+	/**
+	 * Handles the redirection for a "select" layout.
+	 */
 	changeLocationSelect: {
 		/**
 		 * Event callback that changes the location when a value is selected in the `select` switcher.
