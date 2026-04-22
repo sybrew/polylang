@@ -709,9 +709,7 @@ class PLL_WPML_Config {
 			return true;
 		}
 
-		$search_method = $this->get_field_attribute( $field, 'search-method' );
-
-		return 'regex' !== $search_method;
+		return 'regex' !== $this->get_field_attribute( $field, 'search-method' );
 	}
 
 	/**
