@@ -41,13 +41,21 @@ defined( 'ABSPATH' ) || exit;
 if ( defined( 'POLYLANG_VERSION' ) ) {
 	// The user is attempting to activate a second plugin instance, typically Polylang and Polylang Pro.
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	require_once ABSPATH . 'wp-includes/pluggable.php';
 
 	if ( is_plugin_active( plugin_basename( __FILE__ ) ) ) {
 		deactivate_plugins( plugin_basename( __FILE__ ) ); // Deactivate this plugin.
-		// WP does not allow us to send a custom meaningful message, so just tell the plugin has been deactivated.
-		wp_safe_redirect( add_query_arg( 'deactivate', 'true', remove_query_arg( 'activate' ) ) );
-		exit;
+
+		add_action(
+			'load-plugins.php',
+			static function () {
+				unset( $_GET['activate'] ); // Prevent WP to display its 'Plugin activated.' message.
+				$updated_notice_args = array(
+					'type'        => 'error',
+					'dismissible' => true,
+				);
+				wp_admin_notice( __( 'Polylang hasn\'t been activated: Polylang and Polylang Pro cannot be activated at the same time.', 'polylang' ), $updated_notice_args );
+			}
+		);
 	}
 	return;
 }
