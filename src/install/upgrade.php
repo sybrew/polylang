@@ -30,21 +30,6 @@ class PLL_Upgrade {
 	}
 
 	/**
-	 * Check if upgrade is possible otherwise die to avoid activation
-	 *
-	 * @since 1.2
-	 *
-	 * @return void
-	 */
-	public function can_activate() {
-		if ( ! $this->can_upgrade() ) {
-			ob_start();
-			$this->admin_notices(); // FIXME the error message is displayed two times
-			die( ob_get_contents() ); // phpcs:ignore WordPress.Security.EscapeOutput
-		}
-	}
-
-	/**
 	 * Upgrades if possible otherwise returns false to stop Polylang loading
 	 *
 	 * @since 1.2
@@ -77,24 +62,30 @@ class PLL_Upgrade {
 	}
 
 	/**
-	 * Displays a notice when upgrading from a too old version
+	 * Displays a notice when upgrading from a too old version.
 	 *
 	 * @since 1.0
 	 *
 	 * @return void
 	 */
 	public function admin_notices() {
-		load_plugin_textdomain( 'polylang' );
-		printf(
-			'<div class="error"><p>%s</p><p>%s</p></div>',
+		$message = sprintf(
+			'<p>%s</p><p>%s</p>',
 			esc_html__( 'Polylang has been deactivated because you upgraded from a too old version.', 'polylang' ),
 			sprintf(
 				/* translators: %1$s and %2$s are Polylang version numbers */
 				esc_html__( 'Before upgrading to %2$s, please upgrade to %1$s.', 'polylang' ),
 				'<strong>2.9</strong>',
-				POLYLANG_VERSION // phpcs:ignore WordPress.Security.EscapeOutput
+				esc_html( POLYLANG_VERSION )
 			)
 		);
+
+		$args = array(
+			'type'           => 'error',
+			'paragraph_wrap' => false,
+		);
+
+		wp_admin_notice( $message, $args );
 	}
 
 	/**
