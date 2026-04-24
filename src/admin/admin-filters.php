@@ -56,25 +56,41 @@ class PLL_Admin_Filters extends PLL_Filters {
 	}
 
 	/**
-	 * Outputs hidden information to modify the biography form with js.
+	 * Adds data to modify the biography form with JS.
+	 *
+	 * This is done here instead of `PLL_Admin_Base::add_inline_scripts()` because we have direct access to the user ID
+	 * And the user capability check has been done by WP.
 	 *
 	 * @since 0.4
+	 * @since 3.9 Doesn't print hidden inputs anymore.
 	 *
 	 * @param WP_User $profileuser The current WP_User object.
 	 * @return void
 	 */
-	public function personal_options( $profileuser ) {
-		foreach ( $this->model->get_languages_list() as $lang ) {
-			$meta        = $lang->is_default ? 'description' : 'description_' . $lang->slug;
-			$description = get_user_meta( $profileuser->ID, $meta, true );
+	public function personal_options( $profileuser ): void {
+		if ( ! wp_script_is( 'pll_user', 'enqueued' ) ) {
+			return;
+		}
 
-			printf(
-				'<input type="hidden" class="biography" name="%s___%s" value="%s" />',
-				esc_attr( $lang->slug ),
-				esc_attr( $lang->name ),
-				sanitize_user_field( 'description', $description, $profileuser->ID, 'edit' )
+		$data = array();
+
+		foreach ( $this->model->languages->get_list() as $lang ) {
+			$meta        = $lang->is_default ? 'description' : "description_{$lang->slug}";
+			$description = get_user_meta( $profileuser->ID, $meta, true );
+			$description = is_string( $description ) ? $description : '';
+
+			$data[] = array(
+				'slug'        => $lang->slug,
+				'name'        => $lang->name,
+				'lang'        => $lang->get_locale( 'display' ),
+				'direction'   => $lang->is_rtl ? 'rtl' : 'ltr',
+				'flag'        => $lang::get_flag_information( $lang->flag_code ),
+				'description' => sanitize_user_field( 'description', $description, $profileuser->ID, 'edit' ),
 			);
 		}
+
+		$script = sprintf( 'const pllDescriptionData = %s;', wp_json_encode( $data ) );
+		wp_add_inline_script( 'pll_user', $script, 'before' );
 	}
 
 	/**
