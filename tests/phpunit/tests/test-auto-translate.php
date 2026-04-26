@@ -190,14 +190,15 @@ class Auto_Translate_Test extends PLL_UnitTestCase {
 	}
 
 	public function test_recent_posts_widget_post_ids_added_on_pre_get_posts() {
+		// Starting with 'essai2' to avoid 'essai' being a substring match of 'essai2'.
 		$posts = self::factory()->post->create_translated(
-			array( 'post_title' => 'test', 'lang' => 'en' ),
-			array( 'post_title' => 'essai', 'lang' => 'fr' )
+			array( 'post_title' => 'test2', 'lang' => 'en' ),
+			array( 'post_title' => 'essai2', 'lang' => 'fr' )
 		);
 
-		$controls = self::factory()->post->create_translated(
-			array( 'post_title' => 'control', 'lang' => 'en' ),
-			array( 'post_title' => 'controle', 'lang' => 'fr' )
+		self::factory()->post->create_translated(
+			array( 'post_title' => 'test3', 'lang' => 'en' ),
+			array( 'post_title' => 'essai3', 'lang' => 'fr' )
 		);
 
 		$exclude_post = function ( $query ) use ( $posts ) {
@@ -226,8 +227,8 @@ class Auto_Translate_Test extends PLL_UnitTestCase {
 			remove_action( 'pre_get_posts', $exclude_post, 20 );
 		}
 
-		$this->assertStringContainsString( 'controle', $output );
-		$this->assertStringNotContainsString( 'essai', $output );
+		$this->assertStringContainsString( 'essai3', $output );
+		$this->assertStringNotContainsString( 'essai2', $output );
 	}
 
 	public function test_page() {
