@@ -33,8 +33,24 @@ class PLL_Frontend_Auto_Translate {
 		$this->model = &$polylang->model;
 		$this->curlang = &$polylang->curlang;
 
-		add_action( 'parse_query', array( $this, 'translate_included_ids_in_query' ), 100 ); // After all Polylang filters.
 		add_action( 'pre_get_posts', array( $this, 'translate_included_post_ids_in_query' ), 10000 ); // After third-party query changes.
+
+		if ( wp_doing_ajax() ) {
+			$this->add_query_hooks();
+		} else {
+			add_action( 'template_redirect', array( $this, 'add_query_hooks' ), 7 ); // Not before 'check_canonical_url'.
+		}
+	}
+
+	/**
+	 * Adds the auto-translation hooks for query vars and term query args.
+	 *
+	 * @since 3.9
+	 *
+	 * @return void
+	 */
+	public function add_query_hooks() {
+		add_action( 'parse_query', array( $this, 'translate_included_ids_in_query' ), 100 ); // After all Polylang filters.
 		add_filter( 'get_terms_args', array( $this, 'get_terms_args' ), 20, 2 );
 	}
 
@@ -213,7 +229,7 @@ class PLL_Frontend_Auto_Translate {
 	public function translate_included_post_ids_in_query( $query ) {
 		$qv = &$query->query_vars;
 
-		if ( empty( $this->curlang ) || ( ! empty( $qv['post_type'] ) && ! $this->model->is_translated_post_type( $qv['post_type'] ) ) ) {
+		if ( empty( $this->curlang ) || isset( $qv['lang'] ) || ( ! empty( $qv['post_type'] ) && ! $this->model->is_translated_post_type( $qv['post_type'] ) ) ) {
 			return;
 		}
 

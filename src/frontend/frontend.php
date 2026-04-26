@@ -245,6 +245,10 @@ class PLL_Frontend extends PLL_Base {
 	 * @return void
 	 */
 	public function hide_language_tax_query( $query ) {
+		if ( ! $query->tax_query instanceof WP_Tax_Query ) {
+			return;
+		}
+
 		if ( empty( $query->tax_query->queries ) || ! is_array( $query->tax_query->queries ) ) {
 			return;
 		}
