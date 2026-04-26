@@ -34,6 +34,7 @@ class PLL_Frontend_Auto_Translate {
 		$this->curlang = &$polylang->curlang;
 
 		add_action( 'parse_query', array( $this, 'translate_included_ids_in_query' ), 100 ); // After all Polylang filters.
+		add_action( 'pre_get_posts', array( $this, 'translate_included_post_ids_in_query' ), 10000 ); // After third-party query changes.
 		add_filter( 'get_terms_args', array( $this, 'get_terms_args' ), 20, 2 );
 	}
 
@@ -198,6 +199,36 @@ class PLL_Frontend_Auto_Translate {
 			$qv['pagename'] = get_page_uri( $tr_id );
 		}
 
+		$this->translate_included_post_ids( $qv );
+	}
+
+	/**
+	 * Filters a posts query to automatically translate included post IDs after third-party query changes.
+	 *
+	 * @since 3.9
+	 *
+	 * @param WP_Query $query WP_Query object.
+	 * @return void
+	 */
+	public function translate_included_post_ids_in_query( $query ) {
+		$qv = &$query->query_vars;
+
+		if ( empty( $this->curlang ) || ( ! empty( $qv['post_type'] ) && ! $this->model->is_translated_post_type( $qv['post_type'] ) ) ) {
+			return;
+		}
+
+		$this->translate_included_post_ids( $qv );
+	}
+
+	/**
+	 * Translates included and excluded post IDs in a posts query.
+	 *
+	 * @since 3.9
+	 *
+	 * @param array $qv WP_Query query vars.
+	 * @return void
+	 */
+	protected function translate_included_post_ids( &$qv ) {
 		// Array of post ids
 		// post_parent__in & post_parent__not_in since WP 3.6
 		foreach ( array( 'post__in', 'post__not_in', 'post_parent__in', 'post_parent__not_in' ) as $key ) { // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn
